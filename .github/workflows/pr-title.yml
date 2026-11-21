@@ -1,0 +1,20 @@
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Title: $TITLE"
+          if [[ ! "$TITLE" =~ ^(feat|fix|chore|docs|test|refactor)\((backend|web|android|api|infra|docs)\):\ .+ ]] \
+             && [[ ! "$TITLE" =~ ^(chore|build)\(deps\) ]]; then
+            echo "::error::PR title must follow 'type(area): summary', for example: feat(web): add booking screen"
+            exit 1
+          fi

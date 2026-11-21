@@ -1,0 +1,19 @@
+Suggested figure captions — replace figure numbers to match the report.
+
+Figure X. Customer appointment booking interface showing available staff, an automatically displayed staff recommendation, estimated waiting times, available slots, and the booking summary.
+
+Figure X. Customer appointment management interface with an expanded rescheduling flow showing alternative staff, updated waiting estimates, and available time slots.
+
+Figure X. Staff daily agenda interface showing assigned appointments, appointment details, service status actions, and working hours.
+
+Figure X. Organization Owner team schedule interface showing appointments by staff member, service categories, workload indicators, and schedule navigation controls.
+
+Figure X. System Admin organization administration interface showing organization search and filtering, organization details, access status, and assigned owner management.
+
+Shared note for SRS Section 1.4.1.2:
+The five interfaces are representative prototypes. All names, appointments, waiting-time estimates, and statistics shown are synthetic examples. They do not demonstrate measured system performance or a completed implementation.
+
+Screenshot details:
+Two mobile interfaces and three desktop web interfaces.
+PNG capture at 2x resolution, without prototype screen-selector controls.
+Staff schedule approval remains an open requirement; no mandatory approval workflow is shown.

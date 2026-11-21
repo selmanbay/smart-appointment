@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!--
+  Design and naming rules for the backend. Formatting is handled by Spotless (google-java-format),
+  so this file does not check whitespace or braces. Limits and reasons: docs/decisions/0007-code-quality-gates.md
+-->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <property name="charset" value="UTF-8"/>
+  <property name="fileExtensions" value="java"/>
+
+  <module name="FileLength"><property name="max" value="300"/></module>
+  <module name="NewlineAtEndOfFile"/>
+
+  <!-- No System.out / printStackTrace: use the logger. -->
+  <module name="RegexpSingleline">
+    <property name="format" value="System\.(out|err)\.print|\.printStackTrace\(\)"/>
+    <property name="message" value="Use the logger instead of System.out or printStackTrace."/>
+  </module>
+  <!-- Suppressing warnings is not allowed (AGENTS.md section 11). -->
+  <module name="RegexpSingleline">
+    <property name="format" value="@SuppressWarnings|CHECKSTYLE:OFF|NOSONAR"/>
+    <property name="message" value="Do not suppress warnings; fix the code."/>
+  </module>
+  <!-- Turkish characters in code (ADR-0006). -->
+  <module name="RegexpSingleline">
+    <property name="format" value="[\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc]"/>
+    <property name="message" value="Code and comments must be in English."/>
+  </module>
+
+  <module name="TreeWalker">
+    <!-- Naming -->
+    <module name="PackageName"><property name="format" value="^com\.smartappointment(\.[a-z][a-z0-9]*)*$"/></module>
+    <module name="TypeName">
+      <property name="format" value="^(?!.*(Helper|Manager|Utils?|Processor|Data|Info)$)[A-Z][a-zA-Z0-9]+$"/>
+      <message key="name.invalidPattern" value="Type name ''{0}'' is vague or not PascalCase. Avoid Helper/Manager/Util/Processor/Data/Info suffixes."/>
+    </module>
+    <module name="MethodName"><property name="format" value="^[a-z][a-zA-Z0-9]{2,}$"/></module>
+    <module name="MemberName"><property name="format" value="^[a-z][a-zA-Z0-9]{1,}$"/></module>
+    <module name="ParameterName"><property name="format" value="^[a-z][a-zA-Z0-9]{1,}$"/></module>
+    <module name="LambdaParameterName"><property name="format" value="^[a-z][a-zA-Z0-9]*$"/></module>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-z][a-zA-Z0-9]{1,}$"/>
+      <property name="allowOneCharVarInForLoop" value="true"/>
+    </module>
+    <module name="ConstantName"/>
+    <module name="StaticVariableName"/>
+    <module name="ClassTypeParameterName"/>
+    <module name="MethodTypeParameterName"/>
+    <module name="AbbreviationAsWordInName">
+      <property name="allowedAbbreviationLength" value="1"/>
+      <property name="ignoreFinal" value="false"/>
+    </module>
+    <module name="IllegalIdentifierName">
+      <property name="format" value="(?i)^(?!(data|info|item|obj|temp|tmp|foo|bar|stuff|thing|helper|manager|util|utils)$).+$"/>
+    </module>
+
+    <!-- Size and complexity -->
+    <module name="MethodLength"><property name="max" value="40"/><property name="countEmpty" value="false"/></module>
+    <module name="ParameterNumber"><property name="max" value="4"/><property name="ignoreOverriddenMethods" value="true"/></module>
+    <module name="CyclomaticComplexity"><property name="max" value="10"/></module>
+    <module name="NPathComplexity"><property name="max" value="100"/></module>
+    <module name="NestedIfDepth"><property name="max" value="2"/></module>
+    <module name="NestedForDepth"><property name="max" value="2"/></module>
+    <module name="NestedTryDepth"><property name="max" value="1"/></module>
+    <module name="ReturnCount"><property name="max" value="3"/></module>
+    <module name="BooleanExpressionComplexity"><property name="max" value="3"/></module>
+
+    <!-- Coupling (single responsibility, dependency inversion) -->
+    <module name="ClassFanOutComplexity"><property name="max" value="12"/></module>
+    <module name="ClassDataAbstractionCoupling"><property name="max" value="7"/></module>
+    <module name="MethodCount"><property name="maxTotal" value="20"/></module>
+
+    <!-- Hygiene -->
+    <module name="AvoidStarImport"/>
+    <module name="UnusedImports"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedLocalVariable"/>
+    <module name="EmptyCatchBlock"/>
+    <module name="EmptyBlock"/>
+    <module name="IllegalCatch"/>
+    <module name="IllegalThrows"/>
+    <module name="EqualsHashCode"/>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+    <module name="MissingSwitchDefault"/>
+    <module name="FallThrough"/>
+    <module name="MultipleVariableDeclarations"/>
+    <module name="OneStatementPerLine"/>
+    <module name="ModifiedControlVariable"/>
+    <module name="ParameterAssignment"/>
+    <module name="InnerAssignment"/>
+    <module name="StringLiteralEquality"/>
+    <module name="VisibilityModifier">
+      <property name="protectedAllowed" value="false"/>
+      <property name="ignoreAnnotationCanonicalNames" value="org.junit.jupiter.api.io.TempDir"/>
+    </module>
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="TodoComment">
+      <property name="format" value="(?i)\b(TODO|FIXME)\b(?!\([a-z]+\): .+)"/>
+    </module>
+    <module name="MagicNumber">
+      <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+      <property name="ignoreHashCodeMethod" value="true"/>
+      <property name="ignoreAnnotation" value="true"/>
+      <property name="ignoreFieldDeclaration" value="true"/>
+    </module>
+  </module>
+
+  <!-- Tests may be longer and use literal values. -->
+  <module name="SuppressionSingleFilter">
+    <property name="files" value="[\\/]src[\\/]test[\\/]"/>
+    <property name="checks" value="MethodLength|MagicNumber|MethodCount|ClassDataAbstractionCoupling|ClassFanOutComplexity"/>
+  </module>
+</module>

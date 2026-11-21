@@ -1,0 +1,10 @@
+# The owner of a folder is requested automatically as a reviewer on PRs that touch it.
+# The work split has not been decided yet. Uncomment the lines and add GitHub usernames once it is.
+*                     @selmanbay
+# /backend/
+# /web/
+# /android/
+# /api/
+# /infra/
+# /.github/
+# /docker-compose.yml

@@ -1,0 +1,36 @@
+openapi: 3.1.0
+info:
+  title: Smart Appointment API
+  version: 0.0.0
+  description: >
+    CNG 491 Smart Appointment and Service Scheduling System REST API.
+    Endpoints will be added here before implementation (see CONTRIBUTING.md, section 6).
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local (docker compose)
+tags:
+  - name: auth
+    description: F1 - registration, login, roles
+  - name: organizations
+    description: F2 - organization management
+  - name: services
+    description: F3 - services and staff assignments
+  - name: staff
+    description: F3/F4 - staff, working hours, schedule change requests
+  - name: appointments
+    description: F5/F6/F8 - slots, booking, cancel, reschedule, status
+  - name: recommendations
+    description: F9 - waiting-time estimate and staff recommendation
+  - name: analytics
+    description: F10 - workload and rates
+  - name: feedback
+    description: F11 - ratings and comments
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

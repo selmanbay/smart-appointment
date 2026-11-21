@@ -1,0 +1,44 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.jks
+*.keystore
+google-services.json
+firebase-service-account*.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+
+# Backend (Maven)
+backend/target/
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# Web (Node)
+web/node_modules/
+web/dist/
+web/.vite/
+*.log
+
+# Android (Gradle)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+
+# Other
+coverage/
+*.tmp
+
+# Personal agent settings (shared settings are in .claude/settings.json)
+.claude/settings.local.json
