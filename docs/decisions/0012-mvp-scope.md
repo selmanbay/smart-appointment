@@ -5,9 +5,11 @@
 - **Feature:** general
 
 ## Context
+
 The SDD (IEEE 1016, 4+1 views) asks for at most 2–3 sequence diagrams and 3 activity diagrams for the critical use cases, and the presentation is assessed on traceability from the SRS to the design. Building exactly those scenarios first makes the design, the code and the demo the same thing.
 
 ## Decision
+
 The MVP is a web app, running locally with `docker compose up` (ADR-0005), that implements these scenarios end to end:
 
 | SDD artefact | SRS | MVP behaviour |
@@ -20,6 +22,7 @@ The MVP is a web app, running locally with `docker compose up` (ADR-0005), that 
 | Activity 3 | F9 | waiting-time estimate and staff ranking |
 
 **In the MVP**
+
 - F1 sign-in with JWT for the four roles. Accounts come from seed data; self sign-up is added later.
 - F2–F4 data from a seed migration (one organization, services, staff, working hours, rules). No owner or admin management screens yet.
 - F5, F6, F8, F9 and e-mail notifications (F7) through Mailpit.
@@ -29,5 +32,6 @@ The MVP is a web app, running locally with `docker compose up` (ADR-0005), that 
 Android app, FCM push, reminders job, analytics (F10), feedback screen (F11), UC-10 schedule change approval, owner and admin screens, self sign-up.
 
 ## Consequences
+
 - The SDD diagrams are drawn from this scope and stored in `docs/sdd/`; code follows the diagrams.
 - Seed data must contain completed past appointments so the waiting-time estimate is meaningful in the demo.

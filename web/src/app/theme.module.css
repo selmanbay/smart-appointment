@@ -1,0 +1,27 @@
+/* Selection state shared by every Radio.Card (docs/design/UI_GUIDELINES.md section 3). */
+.radioCard {
+  border-color: var(--mantine-color-default-border);
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.radioCard[data-checked] {
+  border-color: var(--mantine-primary-color-filled);
+  background-color: var(--mantine-color-accent-0);
+}
+
+.radioCard:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+/* Chips fill their grid cell so day and time pickers line up (UI_GUIDELINES section 5). */
+.chipRoot {
+  width: 100%;
+}
+
+.chipLabel {
+  width: 100%;
+  justify-content: center;
+}

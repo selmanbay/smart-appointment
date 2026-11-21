@@ -1,11 +1,24 @@
 # web
 
-React web app for customers, staff, organization owners and the system admin. No code yet.
+React web app for customers, staff, organization owners and the system admin.
+
+**Status:** clickable prototype of the three MVP screens (book appointment, my appointments, staff daily agenda) on in-memory sample data. Screens call `src/api/appointmentsApi.ts`, which keeps the signatures of the planned REST calls, so they switch to the backend without changes.
+
+## Run
+
+```bash
+cd web
+npm ci
+npm run dev        # http://localhost:5173, sign in with a demo account
+```
+
+Or as part of the stack: `make up` (served by nginx on <http://localhost:5173>).
 
 ## Planned stack
 
 - Node 24 LTS (`.nvmrc`), npm (commit `package-lock.json`)
 - Vite + React 19 + TypeScript
+- Mantine 9 (only UI library, ADR-0013), Tabler icons, IBM Plex Sans
 - React Router, TanStack Query
 - openapi-typescript: types generated from `../api/openapi.yaml`
 - react-big-calendar: owner team schedule with one column per staff member (Figure 5)
@@ -15,21 +28,22 @@ React web app for customers, staff, organization owners and the system admin. No
 
 CI (`.github/workflows/ci.yml`, job `web`) and the `Makefile` call these, so `package.json` must define them:
 
-| Script | Does |
-|---|---|
-| `lint` | `eslint .` |
+| Script                    | Does                                        |
+| ------------------------- | ------------------------------------------- |
+| `lint`                    | `eslint .`                                  |
 | `format` / `format:check` | `prettier --write .` / `prettier --check .` |
-| `typecheck` | `tsc --noEmit` |
-| `test` | `vitest run` |
-| `build` | `tsc -b && vite build` |
+| `typecheck`               | `tsc --noEmit`                              |
+| `test`                    | `vitest run`                                |
+| `build`                   | `tsc -b && vite build`                      |
 
 ## Folder layout (ADR-0001)
 
 ```text
 src/
-  app/          routing, layout, auth guard
-  api/          generated API client and types
-  components/   shared UI
+  app/          App root, routes, Mantine theme (the only place for visual values)
+  api/          API client and domain types; mockStore.ts holds prototype data
+  components/   shared UI: layout/ (AppFrame, Page, Section, Panel, Columns), StatusBadge, session/, format.ts
+  test/         test setup and render helper
   features/
     auth/                 sign in, sign up
     booking/              book appointment, staff recommendation (Figure 2)
@@ -49,12 +63,12 @@ e2e/            Playwright end-to-end tests against docker compose
 
 ## Screens (SRS 1.4.1.2)
 
-| Screen | Role | Use cases |
-|---|---|---|
-| Book appointment | Customer | UC-3, 18, 19 |
-| My appointments | Customer | UC-4, 5, 6, 7 |
-| Daily agenda | Staff | UC-8, 9 |
-| Team schedule, services, staff, rules | Owner | UC-10 to 15 |
-| Organizations | System admin | UC-16 |
+| Screen                                | Role         | Use cases     |
+| ------------------------------------- | ------------ | ------------- |
+| Book appointment                      | Customer     | UC-3, 18, 19  |
+| My appointments                       | Customer     | UC-4, 5, 6, 7 |
+| Daily agenda                          | Staff        | UC-8, 9       |
+| Team schedule, services, staff, rules | Owner        | UC-10 to 15   |
+| Organizations                         | System admin | UC-16         |
 
 Visual reference: `../docs/design/prototype/index.html` and `../docs/design/ui-screenshots/`.

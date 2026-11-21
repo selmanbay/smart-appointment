@@ -2,7 +2,7 @@
 
 The current state of the project. Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first for the structure and commands. Update rules: [`guides/LOGGING.md`](guides/LOGGING.md) section 3.
 
-Last updated: 2026-11-21
+Last updated: 2026-11-22
 
 ## Summary
 
@@ -17,7 +17,7 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 | [Organization management](features/organization.md) | F2 (+ UC-13 branding) | Not started | |
 | [Services and staff](features/catalog.md) | F3 | Not started | |
 | [Working hours, capacity and rules](features/schedule.md) | F4 | Not started | |
-| [Booking: slots, booking, cancel, reschedule, status](features/booking.md) | F5, F6, F8 | Not started | |
+| [Booking: slots, booking, cancel, reschedule, status](features/booking.md) | F5, F6, F8 | In progress | Web prototype on mock data; no backend yet |
 | [Waiting time and staff recommendation](features/estimation.md) | F9 | Not started | |
 | [Notifications and reminders](features/notification.md) | F7 | Not started | |
 | [Workload and analytics](features/analytics.md) | F10 | Not started | |
@@ -27,11 +27,10 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 
 MVP scope: ADR-0012 (UC-3 book, UC-4 reschedule / UC-5 cancel, UC-8 service status, web screens for Figures 2–4).
 
-1. Web skeleton from the cleaned-up prototype: Vite + React + TypeScript, lint, design tokens, the four MVP screens with mock data
-2. MVP endpoints in `api/openapi.yaml` (auth, services, staff recommendations, slots, appointments, status)
-3. Backend: JWT sign-in, seed migration, slots (Eq. 1), estimation (Eq. 3, Eq. 4), booking with capacity lock, reschedule, cancel, status, e-mail
-4. SDD diagrams in `docs/sdd/` (class, 3 activity, 3 sequence, DFD level 0, component + deployment)
-5. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS); each member opens `develop/<name>`
+1. MVP endpoints in `api/openapi.yaml` (auth, services, staff recommendations, slots, appointments, status); the web prototype is ready to switch from mock data
+2. Backend: JWT sign-in, seed migration, slots (Eq. 1), estimation (Eq. 3, Eq. 4), booking with capacity lock, reschedule, cancel, status, e-mail
+3. SDD diagrams in `docs/sdd/` (class, 3 activity, 3 sequence, DFD level 0, component + deployment)
+4. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS); each member opens `develop/<name>`
 
 ## Blockers
 

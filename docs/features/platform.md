@@ -21,6 +21,13 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · web
+
+- **Done:** Web skeleton: Vite 8, React 19, TypeScript 6, Mantine 9 as the only UI library with one theme (ADR-0013), shared layout components (AppFrame, Page, Section, Panel, Columns) with fixed spacing (UI_GUIDELINES section 5), React Router, TanStack Query, Vitest. ESLint boundaries rule migrated to the plugin's v7 syntax and verified to block cross-feature imports. Web Dockerfile (nginx) and compose service added.
+- **Why:** MVP screens must look consistent when four people and their agents add to them; the prototype's generic AI styling was replaced (UI_GUIDELINES section 1).
+- **State / next:** Lint, type check, 7 Vitest tests and the production build pass locally. Checked in the browser at 1440px and 375px. The Docker image was not built locally (no Docker); CI builds it. Screens use mock data until the API exists.
+- **Refs:** ADR-0012, ADR-0013, docs/design/UI_GUIDELINES.md
+
 ### 2026-11-21 · selman · docs
 
 - **Done:** Cleaned up the repository root: full agent rules moved to `docs/guides/AGENT_RULES.md`, team rules to `docs/guides/CONTRIBUTING.md`, the logging guide to `docs/guides/LOGGING.md`. The root keeps only `README.md` and a short `AGENTS.md` entry point; Claude Code's entry point is `.claude/CLAUDE.md`. All references and links were updated.

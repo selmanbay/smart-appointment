@@ -13,7 +13,7 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'src/api/generated/**'] },
+  { ignores: ['dist', 'coverage', 'src/api/generated/**', '*.config.{js,cjs,ts}'] },
   {
     files: ['src/**/*.{ts,tsx}'],
     extends: [
@@ -46,15 +46,43 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
 
       // Feature boundaries (ADR-0001): a feature imports only itself, shared components and the API client.
-      'boundaries/element-types': [
+      'boundaries/dependencies': [
         'error',
         {
           default: 'disallow',
-          rules: [
-            { from: 'app', allow: ['app', 'feature', 'components', 'api'] },
-            { from: 'feature', allow: [['feature', { feature: '${from.feature}' }], 'components', 'api'] },
-            { from: 'components', allow: ['components'] },
-            { from: 'api', allow: ['api'] },
+          policies: [
+            {
+              from: { element: { type: 'app' } },
+              allow: [
+                { to: { element: { type: 'app' } } },
+                { to: { element: { type: 'feature' } } },
+                { to: { element: { type: 'components' } } },
+                { to: { element: { type: 'api' } } },
+              ],
+            },
+            {
+              from: { element: { type: 'feature' } },
+              allow: [
+                {
+                  to: {
+                    element: {
+                      type: 'feature',
+                      captured: { feature: '{{ from.captured.feature }}' },
+                    },
+                  },
+                },
+                { to: { element: { type: 'components' } } },
+                { to: { element: { type: 'api' } } },
+              ],
+            },
+            {
+              from: { element: { type: 'components' } },
+              allow: [
+                { to: { element: { type: 'components' } } },
+                { to: { element: { type: 'api' } } },
+              ],
+            },
+            { from: { element: { type: 'api' } }, allow: [{ to: { element: { type: 'api' } } }] },
           ],
         },
       ],
@@ -86,11 +114,48 @@ export default tseslint.config(
         { selector: 'import', format: null },
       ],
       'id-length': ['error', { min: 2, exceptions: ['i', 'j', '_'], properties: 'never' }],
-      'id-denylist': ['error', 'data', 'info', 'item', 'obj', 'temp', 'tmp', 'foo', 'bar', 'stuff', 'thing', 'helper', 'manager', 'util', 'utils'],
+      'id-denylist': [
+        'error',
+        'data',
+        'info',
+        'item',
+        'obj',
+        'temp',
+        'tmp',
+        'foo',
+        'bar',
+        'stuff',
+        'thing',
+        'helper',
+        'manager',
+        'util',
+        'utils',
+      ],
 
       // Single responsibility per module.
       'max-classes-per-file': ['error', 1],
       'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
+
+      // One UI library, no custom CSS in features (ADR-0013).
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@mui/*',
+                '@chakra-ui/*',
+                'antd',
+                'antd/*',
+                'tailwindcss',
+                'styled-components',
+                '@emotion/*',
+              ],
+              message: 'Use Mantine only (ADR-0013).',
+            },
+          ],
+        },
+      ],
 
       // Hygiene.
       'no-console': 'error',
@@ -108,6 +173,35 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 'error',
     },
     linterOptions: { reportUnusedDisableDirectives: 'error', noInlineConfig: true },
+  },
+  {
+    // Feature code uses Mantine and shared components only; no stylesheets (docs/design/UI_GUIDELINES.md).
+    files: ['src/features/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['*.css', '*.scss'],
+              message: 'No stylesheets in features; use Mantine props or a shared component.',
+            },
+            {
+              group: [
+                '@mui/*',
+                '@chakra-ui/*',
+                'antd',
+                'antd/*',
+                'tailwindcss',
+                'styled-components',
+                '@emotion/*',
+              ],
+              message: 'Use Mantine only (ADR-0013).',
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     files: ['src/**/*.test.{ts,tsx}'],

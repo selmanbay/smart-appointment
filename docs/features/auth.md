@@ -21,6 +21,11 @@ Not started
 
 ## Log
 
+### 2026-11-22 · selman · web
+
+- **Done:** Prototype sign-in with two demo accounts (customer, staff) held in memory, and a role guard on routes.
+- **State / next:** Replace with e-mail and password against the JWT endpoint once it exists.
+
 ### 2026-11-21 · selman · backend
 
 - **Done:** `app_user` table in Flyway V1 (unique e-mail, role check, org required for owner and staff). Security is stateless and returns 401 for everything except `/api/v1/auth/**` and health; JWT is not implemented yet.

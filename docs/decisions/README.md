@@ -48,3 +48,4 @@ What we gain and lose, and what to watch out for from now on.
 | [0010](0010-ci-pipeline.md) | Standard CI pipeline with local parity | Accepted |
 | [0011](0011-personal-and-feature-branches.md) | Personal and shared feature branches | Accepted |
 | [0012](0012-mvp-scope.md) | MVP scope follows the SDD critical scenarios | Accepted |
+| [0013](0013-mantine-ui-library.md) | Mantine as the only UI library | Accepted |

@@ -49,14 +49,15 @@ smart-appointment/
 │           ├── common/...                                 tests for common code
 │           └── <feature>/                                 mirrors main packages
 │
-├── web/                             React + Vite + TypeScript                         [config only]
-│   ├── eslint.config.js             lint rules, feature boundaries (ADR-0007)
+├── web/                             React + Vite + TypeScript + Mantine               [prototype, mock data]
+│   ├── eslint.config.js             lint rules, feature boundaries, Mantine-only (ADR-0007, ADR-0013)
+│   ├── Dockerfile, nginx.conf       static build served by unprivileged nginx
 │   ├── .prettierrc.json             formatting
 │   ├── e2e/                         Playwright flows                                  [empty]
 │   └── src/
-│       ├── app/                     routing, layout, auth guard
-│       ├── api/                     client and types generated from api/openapi.yaml
-│       ├── components/              shared UI
+│       ├── app/                     App root, routes, theme.ts (all visual values)
+│       ├── api/                     API client and types; mockStore.ts until the backend endpoints exist
+│       ├── components/              layout/ (AppFrame, Page, Section, Panel, Columns), StatusBadge, session/
 │       └── features/<screen-group>/ screens + colocated *.test.tsx (section 3)
 │
 ├── android/                         Kotlin + Jetpack Compose, after the MVP            [folders only]
@@ -77,6 +78,7 @@ smart-appointment/
 │   ├── features/<feature>.md        scope, status, open questions, log per feature
 │   ├── decisions/NNNN-*.md          architecture decision records
 │   ├── srs/                         SRS PDF (source of requirements)
+│   ├── design/UI_GUIDELINES.md      tokens, components, spacing and copy rules for every screen
 │   └── design/                      UI screenshots and static HTML prototype (reference only)
 │
 ├── scripts/
@@ -96,7 +98,7 @@ smart-appointment/
 ├── Makefile                         local commands that mirror CI (`make help`)
 ├── .markdownlint-cli2.jsonc         Markdown lint rules
 ├── .vscode/extensions.json          recommended editor extensions
-├── docker-compose.yml               db (PostgreSQL 17), mailpit, backend
+├── docker-compose.yml               db (PostgreSQL 17), mailpit, backend, web
 ├── .env.example                     every environment variable with local values
 ├── AGENTS.md                        short entry point for agents (Codex, Cursor, ...) pointing here
 └── README.md                        overview and quick start
@@ -165,7 +167,7 @@ open target/site/jacoco/index.html   # coverage report
 
 Required tests: F5 capacity (including a concurrent booking test), F6 cancel/reschedule rules, F9 Eq. 3 and Eq. 4 with the SRS examples, every status transition (AGENT_RULES 7).
 
-### Web (once the Vite project exists)
+### Web
 
 | Layer | Where / naming | Tooling |
 |---|---|---|
@@ -228,7 +230,7 @@ make verify                  # all lint and tests, as in CI
 | Health | <http://localhost:8080/actuator/health> | |
 | PostgreSQL | `localhost:5432` | credentials in `.env` |
 | Mailpit | <http://localhost:8025> | every e-mail the backend sends |
-| Web | <http://localhost:5173> | once the web skeleton exists |
+| Web | <http://localhost:5173> | `npm run dev` in `web/`, or nginx via `make up`; demo accounts on the sign-in page |
 
 Profiles: `local` (default, compose), `prod` (hosted: JSON logs, rate limiting on). All settings and their environment variables: `backend/src/main/resources/application.yml` and `.env.example`.
 

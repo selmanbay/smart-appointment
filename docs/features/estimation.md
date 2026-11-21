@@ -20,6 +20,12 @@ Not started
 
 ## Log
 
+### 2026-11-22 · selman · web
+
+- **Done:** Staff option card shows estimated wait, workload as "x of y slots booked", mean rating and a plain "Recommended: shortest estimated wait" line; the mock API ranks by wait, then rating.
+- **State / next:** Values are sample data; the real numbers come from Eq. 3 and Eq. 4 in the backend.
+- **Refs:** UC-18, UC-19
+
 ### 2026-11-21 · selman · docs
 
 - **Done:** Created the feature file; scope taken from the SRS.

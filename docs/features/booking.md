@@ -12,13 +12,19 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
 - [ ] Locking strategy for concurrent bookings: SELECT ... FOR UPDATE on the staff row, or an advisory lock?
 
 ## Log
+
+### 2026-11-22 · selman · web
+
+- **Done:** Prototype screens for UC-3 (book: service, working day, staff ranked by estimated wait, free slots, confirm) and UC-5/UC-6 (my appointments: upcoming and past, cancel, reschedule link), plus UC-8 staff daily agenda with status actions limited to the SRS 2.5 transitions. Unit tests cover the transition rules and the appointment detail actions.
+- **State / next:** Runs on `src/api/mockStore.ts`; reschedule only links to the booking screen. Next: define the endpoints in `api/openapi.yaml` and implement them in the backend.
+- **Refs:** ADR-0012, SRS UC-3, UC-4, UC-5, UC-8
 
 ### 2026-11-21 · selman · backend
 
