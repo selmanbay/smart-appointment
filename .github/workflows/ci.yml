@@ -80,7 +80,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew assembleDebug
 
   # Required check in the branch ruleset. Skipped jobs count as success; a failed job blocks the PR.
