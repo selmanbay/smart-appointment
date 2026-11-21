@@ -1,0 +1,21 @@
+// Markdown lint rules for docs and READMEs (run in CI: repo-lint job).
+{
+  "config": {
+    "default": true,
+    // Long lines are fine; tables and links make wrapping impractical.
+    "MD013": false,
+    // Log entries repeat the same date, person and area as headings.
+    "MD024": false,
+    // The PR template starts with a section heading, not a title.
+    "MD041": false,
+    // Allow the bold "**Start every task...**" style paragraphs.
+    "MD036": false,
+    // Table pipe spacing is cosmetic; aligned and compact tables are both fine.
+    "MD060": false
+  },
+  "ignores": [
+    "**/node_modules/**",
+    "**/target/**",
+    "**/dist/**"
+  ]
+}

@@ -12,7 +12,7 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 
 | Feature | SRS | Status | Note |
 |---|---|---|---|
-| [Platform and infrastructure](features/platform.md) | — | In progress | Repo rules, CI, lint, backend skeleton done |
+| [Platform and infrastructure](features/platform.md) | — | In progress | Repo rules, CI pipeline, lint, backend skeleton done |
 | [Authentication and roles](features/auth.md) | F1 | Not started | |
 | [Organization management](features/organization.md) | F2 (+ UC-13 branding) | Not started | |
 | [Services and staff](features/catalog.md) | F3 | Not started | |

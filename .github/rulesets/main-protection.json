@@ -47,9 +47,6 @@
           },
           {
             "context": "no-ai-attribution"
-          },
-          {
-            "context": "english-only"
           }
         ]
       }

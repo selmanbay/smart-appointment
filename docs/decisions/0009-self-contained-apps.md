@@ -5,12 +5,14 @@
 - **Feature:** general
 
 ## Context
+
 The first layout kept load tests in a shared `infra/` folder and did not say where web and Android tests go. The team wants one clear rule: an app's code, tests and build files live together in that app's folder.
 
 ## Decision
+
 Top level:
 
-```
+```text
 backend/    Spring Boot API: code, unit/slice/integration/architecture tests, load tests, Dockerfile
 web/        React app: code, colocated unit tests, e2e tests, lint config, Dockerfile
 android/    Kotlin app: code, local unit tests, instrumented tests
@@ -33,5 +35,6 @@ Tests per app:
 - The shared `infra/` folder is removed; k6 load tests moved to `backend/load-tests/` (this replaces the `infra/k6/` path in ADR-0008).
 
 ## Consequences
+
 - Anyone working on one app needs only that folder plus `api/`.
 - CI jobs map one-to-one to app folders.

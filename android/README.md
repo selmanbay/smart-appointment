@@ -14,7 +14,7 @@ Sign in / sign up, book appointment (UC-3), my appointments, cancel and reschedu
 
 ## Folder layout (ADR-0009)
 
-```
+```text
 app/src/
   main/java/com/smartappointment/android/<feature>/         code
   test/java/com/smartappointment/android/<feature>/         local unit tests (JUnit)

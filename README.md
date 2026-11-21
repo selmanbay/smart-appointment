@@ -11,7 +11,7 @@ Team rules, the backend skeleton (configuration, security, rate limiting, databa
 
 ## Layout
 
-```
+```text
 smart-appointment/
   backend/             Spring Boot REST API (Java 21)
     src/main/          code, one package per feature
@@ -40,16 +40,17 @@ You need Git and Docker Desktop (or OrbStack). Android work also needs Android S
 ```bash
 git clone git@github.com:selmanbay/smart-appointment.git
 cd smart-appointment
-./scripts/setup.sh        # enables git hooks, creates .env
-docker compose up
+make setup        # enables git hooks, creates .env
+make up           # starts PostgreSQL, Mailpit and the backend
+make help         # all commands; `make verify` runs what CI runs
 ```
 
 | Service | Address |
 |---|---|
 | PostgreSQL | `localhost:5432` |
-| Mailpit (outgoing e-mail) | http://localhost:8025 |
-| Backend (once added) | http://localhost:8080 |
-| Web (once added) | http://localhost:5173 |
+| Mailpit (outgoing e-mail) | <http://localhost:8025> |
+| Backend (once added) | <http://localhost:8080> |
+| Web (once added) | <http://localhost:5173> |
 
 ## Working rules
 

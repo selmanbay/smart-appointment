@@ -21,9 +21,11 @@ Not started
 ## Log
 
 ### 2026-11-21 · selman · backend
+
 - **Done:** `feedback` table in Flyway V1: one per appointment, rating 1-5.
 - **Refs:** SRS Table 9
 
 ### 2026-11-21 · selman · docs
+
 - **Done:** Created the feature file; scope taken from the SRS.
 - **Refs:** ADR-0001, ADR-0002

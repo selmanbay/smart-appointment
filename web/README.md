@@ -11,9 +11,21 @@ React web app for customers, staff, organization owners and the system admin. No
 - react-big-calendar: owner team schedule with one column per staff member (Figure 5)
 - ESLint + Prettier
 
+## Required npm scripts
+
+CI (`.github/workflows/ci.yml`, job `web`) and the `Makefile` call these, so `package.json` must define them:
+
+| Script | Does |
+|---|---|
+| `lint` | `eslint .` |
+| `format` / `format:check` | `prettier --write .` / `prettier --check .` |
+| `typecheck` | `tsc --noEmit` |
+| `test` | `vitest run` |
+| `build` | `tsc -b && vite build` |
+
 ## Folder layout (ADR-0001)
 
-```
+```text
 src/
   app/          routing, layout, auth guard
   api/          generated API client and types

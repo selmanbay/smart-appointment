@@ -26,7 +26,7 @@ The work split has not been decided yet. Fill in this table and `.github/CODEOWN
 - `main` is protected: no direct pushes, no force pushes, no deletion.
 - Every piece of work gets a new branch from `main`:
 
-```
+```text
 <type>/<short-name>
 ```
 
@@ -46,7 +46,7 @@ Example: `feat/booking-capacity-check`. Lowercase, words separated by hyphens.
 
 [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 <type>(<area>): <imperative summary>
 ```
 
@@ -103,7 +103,8 @@ Example: `feat/booking-capacity-check`. Lowercase, words separated by hyphens.
 
 A piece of work is done only when all of these are true:
 
-- [ ] Merged into `main` with green CI
+- [ ] `make verify` passes locally and CI is green
+- [ ] Merged into `main`
 - [ ] The related use case step works
 - [ ] New business logic has tests (especially F5, F6, F9)
 - [ ] `api/openapi.yaml` is up to date if the API changed

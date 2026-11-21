@@ -21,7 +21,7 @@ With Docker (recommended, from the repository root):
 docker compose up --build
 ```
 
-The API listens on http://localhost:8080, health on http://localhost:8080/actuator/health. Outgoing e-mail appears in Mailpit at http://localhost:8025.
+The API listens on <http://localhost:8080>, health on <http://localhost:8080/actuator/health>. Outgoing e-mail appears in Mailpit at <http://localhost:8025>.
 
 Without Docker for the app itself (PostgreSQL still needed, e.g. `docker compose up db mailpit`):
 
@@ -41,7 +41,7 @@ Integration tests (`*IT`) start PostgreSQL with Testcontainers and are skipped w
 
 ## Layout (ADR-0001, ADR-0009)
 
-```
+```text
 backend/
   pom.xml, mvnw, Dockerfile
   config/checkstyle.xml           lint rules (ADR-0007)

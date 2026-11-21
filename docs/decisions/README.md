@@ -45,3 +45,4 @@ What we gain and lose, and what to watch out for from now on.
 | [0007](0007-code-quality-gates.md) | Code quality gates | Accepted |
 | [0008](0008-hosting-ready-by-configuration.md) | Hosting-ready by configuration | Accepted |
 | [0009](0009-self-contained-apps.md) | Each app is self-contained, with its own tests | Accepted |
+| [0010](0010-ci-pipeline.md) | Standard CI pipeline with local parity | Accepted |

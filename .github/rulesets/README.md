@@ -4,7 +4,7 @@
 
 - `main` cannot be deleted or force-pushed, and history stays linear
 - Changes land only through PRs: at least one approval, resolved threads, squash merge only
-- The `ci-ok` (CI), `check` (PR title), `no-ai-attribution` and `english-only` checks must pass, and the branch must be up to date with `main`
+- The `ci-ok` (all lint, test and build jobs), `check` (PR title) and `no-ai-attribution` checks must pass, and the branch must be up to date with `main`
 
 ## How to apply
 

@@ -60,10 +60,13 @@ Before saying a task is done, run what applies and report the real result (inclu
 
 | Area | Command |
 |---|---|
-| backend | `cd backend && ./mvnw -B verify` |
-| web | `cd web && npm ci && npm run lint && npm run build` |
-| android | `cd android && ./gradlew assembleDebug` |
-| whole stack | `docker compose up` |
+| everything (as in CI) | `make verify` |
+| backend | `make backend-lint backend-verify` |
+| web | `make web-lint web-test` and `cd web && npm run build` |
+| android | `cd android && ./gradlew ktlintCheck lint test assembleDebug` |
+| whole stack | `make up` |
+
+Run `make format` before committing. CI runs the same checks (`docs/PROJECT_MAP.md` section 6); a red CI is not done.
 
 Business logic in F5 (booking/capacity), F6 (cancel/reschedule) and F9 (waiting time, Eq. 3–4) needs unit tests. Concurrency in F5 needs an integration test with parallel requests.
 
@@ -87,12 +90,14 @@ Everything in this repository is in English: code, identifiers, comments, commit
 Every agent works on a different machine. The only shared memory is this repository, so keep it current. Full rules: `docs/LOGGING.md`.
 
 **Before starting a task, read:**
+
 1. `docs/PROJECT_MAP.md` (where to work, how to verify)
 2. `docs/STATUS.md`
 3. The feature file for the task: `docs/features/<feature>.md` (scope, status, open questions, log)
 4. Every ADR that file or the task mentions (`docs/decisions/`)
 
 **Before finishing, in the same branch / PR:**
+
 1. Add an entry at the top of the feature's `## Log` section (format in `docs/LOGGING.md` section 2). Write only verified results; if something is untested, say so.
 2. If the feature status changed, update its `## Status` line and the matching row in `docs/STATUS.md`.
 3. Tick or add questions under `## Open questions`.
@@ -116,12 +121,14 @@ Linters enforce the limits below (ADR-0007). Do not disable a lint rule, add `es
 | File length | 300 lines | 300 lines |
 
 **Structure:**
+
 - Respect feature boundaries (ADR-0001). Web features never import from another feature; shared code goes to `components/` or `api/`. Backend features talk to each other only through services.
 - Controllers only map HTTP to service calls. Business rules live in services; calculations live in `estimation/`.
 - Before adding a helper, search for an existing one. Do not create a second date utility, HTTP client, error type or formatter.
 - No new abstraction (interface, base class, factory, generic helper) until there are two real uses.
 
 **Code hygiene:**
+
 - No dead code, unused variables, unused imports or commented-out code.
 - No `TODO` without a reason and a name: `// TODO(selman): ...`. Prefer an open question in the feature log.
 - No `any` in TypeScript, no non-null assertion `!`, no `console.log`, no `System.out.println`. Use the logger.
@@ -130,11 +137,13 @@ Linters enforce the limits below (ADR-0007). Do not disable a lint rule, add `es
 - Names say what something is in domain terms from the SRS (`appointment`, `staff`, `slot`, `learnedDuration`), not `data`, `item`, `info`, `helper`, `manager`, `util`, `tmp`.
 
 **Comments:**
+
 - Comment *why*, never *what*. Do not restate the code.
 - No banner comments, no section dividers, no emoji, no "This function does X" on obvious code.
 - Reference the SRS where it explains a rule: `// SRS Eq. 4: projected start is the later of scheduled start and previous finish`.
 
 **Changes:**
+
 - Smallest change that solves the task. Do not reformat, rename or "improve" code outside the task.
 - Run the linter and formatter before finishing (`./mvnw spotless:apply checkstyle:check`, `npm run lint -- --fix && npm run format`).
 

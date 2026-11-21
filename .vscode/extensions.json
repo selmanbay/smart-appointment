@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-spring-boot",
+    "shengchen.vscode-checkstyle",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "davidanson.vscode-markdownlint",
+    "redhat.vscode-yaml",
+    "ms-azuretools.vscode-docker",
+    "fwcd.kotlin"
+  ]
+}

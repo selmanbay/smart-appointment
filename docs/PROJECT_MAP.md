@@ -16,7 +16,7 @@ Read in this order before your first change:
 
 ## 2. Structure map
 
-```
+```text
 smart-appointment/
 │
 ├── backend/                         Spring Boot REST API, Java 21                     [built]
@@ -80,12 +80,16 @@ smart-appointment/
 │   └── check-english.sh             used by CI
 │
 ├── .github/
-│   ├── workflows/                   ci.yml, pr-title.yml, no-ai-attribution.yml, english-only.yml
+│   ├── workflows/                   ci.yml (lint, test, build), security.yml (CodeQL, dependency review),
+│   │                                pr-title.yml, no-ai-attribution.yml
 │   ├── rulesets/main-protection.json   branch rules to import on GitHub
 │   ├── pull_request_template.md, CODEOWNERS, dependabot.yml
 │
 ├── .githooks/commit-msg             local AI-attribution check
 ├── .claude/settings.json            shared Claude Code settings (attribution off, deny rules)
+├── Makefile                         local commands that mirror CI (`make help`)
+├── .markdownlint-cli2.jsonc         Markdown lint rules
+├── .vscode/extensions.json          recommended editor extensions
 ├── docker-compose.yml               db (PostgreSQL 17), mailpit, backend
 ├── .env.example                     every environment variable with local values
 ├── AGENTS.md, CLAUDE.md             agent rules
@@ -183,33 +187,43 @@ cd android
 
 ## 6. Quality gates
 
-Everything below runs in CI on every PR and is required by the `main` ruleset.
+The `Makefile` runs the same checks locally as CI. Run `make help` for the list; before opening a PR run `make verify`.
 
-| Check | Local command | CI job |
-|---|---|---|
-| Backend build, tests, Checkstyle, Spotless, ArchUnit | `cd backend && ./mvnw verify` | `CI / backend` → `ci-ok` |
-| Web lint, build | `cd web && npm run lint && npm run build` | `CI / web` → `ci-ok` |
-| Android build | `cd android && ./gradlew assembleDebug` | `CI / android` → `ci-ok` |
-| PR title format | — | `PR title / check` |
-| No AI attribution | commit hook (`./scripts/setup.sh`) | `No AI attribution` |
-| English only | `./scripts/check-english.sh` | `English only` |
+| Check | Local command | CI workflow / job | Required |
+|---|---|---|---|
+| English only, Markdown lint | `make repo-lint` | `CI / repo-lint` | via `ci-ok` |
+| Workflow lint (actionlint), Dockerfile lint (hadolint) | — (CI only) | `CI / repo-lint` | via `ci-ok` |
+| Backend formatting (Spotless), Checkstyle | `make backend-lint` | `CI / backend-lint` | via `ci-ok` |
+| Backend unit, slice, ArchUnit, integration tests, coverage | `make backend-verify` | `CI / backend-test` (reports as artifact) | via `ci-ok` |
+| Backend Docker image builds | `docker build backend` | `CI / backend-image` | via `ci-ok` |
+| Web ESLint, Prettier, type check, Vitest, build | `make web-lint web-test` | `CI / web` | via `ci-ok` |
+| Android ktlint, lint, tests, build | `./gradlew ktlintCheck lint test assembleDebug` | `CI / android` | via `ci-ok` |
+| PR title format | — | `PR title / check` | yes |
+| No AI attribution | commit hook (`make setup`) | `No AI attribution` | yes |
+| Dependency vulnerabilities | — | `Security / dependency-review` (PRs) | no |
+| Static security analysis (CodeQL: Java, TypeScript, workflows) | — | `Security / codeql` (PRs, main, weekly) | no |
+
+App jobs run only when that app's files change and its build file exists. `ci-ok` fails if any job fails.
+
+The web job expects these npm scripts in `web/package.json`: `lint`, `format`, `format:check`, `typecheck`, `test`, `build`. The Android job expects the ktlint Gradle plugin.
 
 Limits (functions, parameters, complexity, file length) and naming rules: AGENTS 11–13.
 
 ## 7. Running locally
 
 ```bash
-./scripts/setup.sh           # once: git hooks, .env from .env.example
-docker compose up --build    # db, mailpit, backend
+make setup                   # once: git hooks, .env from .env.example
+make up                      # db, mailpit, backend (docker compose up --build)
+make verify                  # all lint and tests, as in CI
 ```
 
 | Service | Address | Notes |
 |---|---|---|
-| Backend API | http://localhost:8080/api/v1 | 401 for everything until auth (F1) exists |
-| Health | http://localhost:8080/actuator/health | |
+| Backend API | <http://localhost:8080/api/v1> | 401 for everything until auth (F1) exists |
+| Health | <http://localhost:8080/actuator/health> | |
 | PostgreSQL | `localhost:5432` | credentials in `.env` |
-| Mailpit | http://localhost:8025 | every e-mail the backend sends |
-| Web | http://localhost:5173 | once the web skeleton exists |
+| Mailpit | <http://localhost:8025> | every e-mail the backend sends |
+| Web | <http://localhost:5173> | once the web skeleton exists |
 
 Profiles: `local` (default, compose), `prod` (hosted: JSON logs, rate limiting on). All settings and their environment variables: `backend/src/main/resources/application.yml` and `.env.example`.
 

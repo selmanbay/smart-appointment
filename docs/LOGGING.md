@@ -40,6 +40,7 @@ One line: Not started | In progress | Testing | Done | Blocked: <reason>
 
 ```markdown
 ### 2026-11-24 · selman · backend
+
 - **Done:** Slot generation follows Eq. 1; break periods are excluded.
 - **Why:** UC-3 step 4 needs the list of free slots.
 - **State / next:** No capacity lock yet; next is the F5 concurrency test.
@@ -59,6 +60,7 @@ Rules:
 ### When to write an entry
 
 Write one when:
+
 - Behaviour was added, changed or removed
 - A bug was found or fixed
 - An approach was tried and dropped
@@ -66,6 +68,7 @@ Write one when:
 - Something is blocked (another feature, missing information, a supervisor decision)
 
 Skip it for:
+
 - Formatting, typos, comment-only changes
 - Dependabot version bumps (the Dependabot PR is the record)
 
