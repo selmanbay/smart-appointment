@@ -9,6 +9,7 @@ The project's memory lives in Markdown files in this repository. Whoever opens i
 | `docs/PROJECT_MAP.md` | Structure map, task routing, test and check commands | When folders, features, commands or checks change |
 | `docs/STATUS.md` | One-page snapshot: status of each feature, next steps, blockers | When a feature's status changes |
 | `docs/features/<feature>.md` | Scope, status, open questions and **log** of one feature | In every PR that touches that feature |
+| `docs/handoff/YYYY-MM-DD-*.md` | Cold-start handoff when work passes to another person: setup, state, ordered tasks with rules and tests | When handing work over |
 | `docs/decisions/NNNN-*.md` | A lasting technical or product decision and its reasoning (ADR) | When a hard-to-reverse decision is made |
 | `docs/guides/AGENT_RULES.md` | Stable working rules | Rarely, by team decision |
 

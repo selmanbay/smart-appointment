@@ -16,9 +16,14 @@ In progress
 
 ## Open questions
 
-- [ ] Locking strategy for concurrent bookings: SELECT ... FOR UPDATE on the staff row, or an advisory lock?
+- [ ] Locking strategy for concurrent bookings: SELECT ... FOR UPDATE on the staff row, or an advisory lock? Proposed: FOR UPDATE on the staff row (handoff B8).
 
 ## Log
+
+### 2026-11-22 · selman · docs
+
+- **Done:** Backend MVP work for this feature handed off to Yusuf as B6, B8 (booking with lock), B9 (reschedule, cancel), B10 (status), B11 (agenda, my appointments), with rules and required tests.
+- **Refs:** `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012
 
 ### 2026-11-22 · selman · web
 

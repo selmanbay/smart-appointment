@@ -27,10 +27,12 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 
 MVP scope: ADR-0012 (UC-3 book, UC-4 reschedule / UC-5 cancel, UC-8 service status, web screens for Figures 2–4).
 
-1. Backend MVP against the contract (`x-mvp: true` operations in `api/openapi.yaml`, Swagger UI at `/swagger-ui`): JWT sign-in, seed data, slots (Eq. 1), estimation (Eq. 3, Eq. 4), booking with capacity lock, reschedule, cancel, status, e-mail
-2. Web: generate API types from the contract, switch screens from mock data to the API, add cancel confirmation and the reschedule flow
-3. SDD diagrams in `docs/sdd/` (class, 3 activity, 3 sequence, DFD level 0, component + deployment)
-4. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS); each member opens `develop/<name>`
+| Who | Work | Where |
+|---|---|---|
+| Yusuf | Backend MVP tasks B1–B12 in order: entities, seed, JWT, catalog reads, estimation, slots, recommendation, booking with lock, reschedule / cancel, status, agenda, e-mail | [`handoff/2026-11-22-backend-mvp.md`](handoff/2026-11-22-backend-mvp.md) |
+| Selman | Web: generate API types from the contract, switch screens to the API as endpoints land, cancel confirmation and reschedule flow | `web/` |
+| Selman | SDD diagrams (class, 3 activity, 3 sequence, DFD level 0, component + deployment) | `docs/sdd/` |
+| Team | Work split in CONTRIBUTING section 1 and CODEOWNERS; Barış Alkan and Zanyar Erkozan open `develop/<name>` | |
 
 ## Blockers
 

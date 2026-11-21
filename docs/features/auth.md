@@ -16,10 +16,15 @@ Not started
 
 ## Open questions
 
-- [ ] Token lifetime: is a refresh token needed?
-- [ ] Are Staff and Owner accounts created by sign-up or by invitation?
+- [ ] Token lifetime: is a refresh token needed? Proposed: no for the MVP, 8-hour access token (handoff B3).
+- [ ] Are Staff and Owner accounts created by sign-up or by invitation? Proposed: created by the owner or admin; seed data for the MVP.
 
 ## Log
+
+### 2026-11-22 · selman · docs
+
+- **Done:** Backend MVP work for this feature handed off to Yusuf as B3 (JWT sign-in) and the auth part of B1/B2, with rules and required tests.
+- **Refs:** `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012
 
 ### 2026-11-22 · selman · web
 

@@ -16,9 +16,14 @@ Not started
 
 ## Open questions
 
-- [ ] For a service with no completed appointments, does learned_duration start at expected_duration?
+- [ ] For a service with no completed appointments, does learned_duration start at expected_duration? Proposed: yes (handoff B5).
 
 ## Log
+
+### 2026-11-22 · selman · docs
+
+- **Done:** Backend MVP work for this feature handed off to Yusuf as B5 (Eq. 3, Eq. 4), B7 (staff recommendation), with rules and required tests.
+- **Refs:** `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012
 
 ### 2026-11-22 · selman · web
 

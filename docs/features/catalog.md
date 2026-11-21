@@ -20,6 +20,11 @@ Not started
 
 ## Log
 
+### 2026-11-22 · selman · docs
+
+- **Done:** Backend MVP work for this feature handed off to Yusuf as B1 (entities), B2 (seed), B4 (service and rule reads), with rules and required tests.
+- **Refs:** `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012
+
 ### 2026-11-21 · selman · backend
 
 - **Done:** `staff`, `service` and `staff_service` (M:N provides) tables in Flyway V1 with capacity ≥ 1 and positive duration checks.

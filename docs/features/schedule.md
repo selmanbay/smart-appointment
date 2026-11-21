@@ -16,9 +16,14 @@ Not started
 
 ## Open questions
 
-- [ ] Is the UC-10 schedule change approval part of the MVP?
+- [x] Is the UC-10 schedule change approval part of the MVP? No (ADR-0012).
 
 ## Log
+
+### 2026-11-22 · selman · docs
+
+- **Done:** Backend MVP work for this feature handed off to Yusuf as B1, B2 (working hours seed), B4 (working hours read), B6 (slots), with rules and required tests.
+- **Refs:** `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012
 
 ### 2026-11-21 · selman · backend
 
