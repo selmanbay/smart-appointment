@@ -10,9 +10,9 @@ RUN ./mvnw -B -q package -DskipTests -Dcheckstyle.skip -Dspotless.check.skip=tru
     && cp target/backend-*.jar app.jar
 
 FROM eclipse-temurin:21-jre
-RUN groupadd --system app && useradd --system --gid app app
+RUN groupadd --system --gid 10001 app && useradd --system --uid 10001 --gid app app
 WORKDIR /app
 COPY --from=build /workspace/app.jar app.jar
-USER app
+USER 10001:10001
 EXPOSE 8080
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]
