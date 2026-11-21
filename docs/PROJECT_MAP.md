@@ -14,6 +14,8 @@ Read in this order before your first change:
 4. The feature file for your task: [`features/`](features/README.md)
 5. The decisions it mentions: [`decisions/`](decisions/README.md)
 
+Branches: work on your personal `develop/<name>` branch, or a shared `feature/<short-name>` branch when several people build one feature; everything reaches `main` through a PR (ADR-0011).
+
 ## 2. Structure map
 
 ```text

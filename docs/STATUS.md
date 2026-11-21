@@ -25,10 +25,13 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 
 ## Next
 
-1. Run `docker compose up --build` once Docker is installed and confirm the backend starts and `BackendApplicationIT` passes
-2. Web skeleton: Vite + React + TypeScript with the existing `eslint.config.js` and Prettier, web service in `docker-compose.yml`
-3. Auth and organization endpoints in `api/openapi.yaml`
-4. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS)
+MVP scope: ADR-0012 (UC-3 book, UC-4 reschedule / UC-5 cancel, UC-8 service status, web screens for Figures 2–4).
+
+1. Web skeleton from the cleaned-up prototype: Vite + React + TypeScript, lint, design tokens, the four MVP screens with mock data
+2. MVP endpoints in `api/openapi.yaml` (auth, services, staff recommendations, slots, appointments, status)
+3. Backend: JWT sign-in, seed migration, slots (Eq. 1), estimation (Eq. 3, Eq. 4), booking with capacity lock, reschedule, cancel, status, e-mail
+4. SDD diagrams in `docs/sdd/` (class, 3 activity, 3 sequence, DFD level 0, component + deployment)
+5. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS); each member opens `develop/<name>`
 
 ## Blockers
 

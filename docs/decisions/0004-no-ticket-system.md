@@ -1,6 +1,6 @@
 # ADR-0004: No mandatory ticket system
 
-- **Status:** Accepted
+- **Status:** Accepted; branch naming superseded by ADR-0011
 - **Date:** 2026-11-21
 - **Feature:** general
 

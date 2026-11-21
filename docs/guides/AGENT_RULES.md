@@ -22,7 +22,7 @@ This is enforced in three places: agent settings (`.claude/settings.json`), the 
 ## 2. Git
 
 - Never commit or push to `main`. Never force push. Never delete branches you did not create.
-- One task = one branch: `<type>/<short-name>` (e.g. `feat/booking-capacity-check`).
+- Work on the human's personal branch `develop/<name>` (or the shared `feature/<short-name>` branch they name). Never commit to another person's `develop/` branch. If you are on `main`, stop and ask which branch to use (ADR-0011).
 - Commit message: `<type>(<area>): <imperative summary>`, English, ≤ 72 chars.
   - type: `feat | fix | chore | docs | test | refactor`
   - area: `backend | web | android | api | infra | docs`

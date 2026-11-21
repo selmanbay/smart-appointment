@@ -23,24 +23,20 @@ The work split has not been decided yet. Fill in this table and `.github/CODEOWN
 
 ## 3. Branches
 
-- `main` is protected: no direct pushes, no force pushes, no deletion.
-- Every piece of work gets a new branch from `main`:
+- `main` is protected: no direct pushes, no force pushes, no deletion. Everything reaches `main` through a PR.
+- Two kinds of branches (ADR-0011):
 
-```text
-<type>/<short-name>
-```
+| Branch | Who commits | Use for |
+|---|---|---|
+| `develop/<name>` | only that person (and their agent) | your own day-to-day work; the default |
+| `feature/<short-name>` | everyone working on that feature | a feature two or more people build at the same time |
 
-| Type | Use for |
-|---|---|
-| `feat/` | new behaviour |
-| `fix/` | bug fixes |
-| `chore/` | tooling, dependencies, configuration |
-| `docs/` | documentation only |
-| `test/` | tests only |
-
-Example: `feat/booking-capacity-check`. Lowercase, words separated by hyphens.
-
-- Keep branches short-lived (a few days at most). Rebase a longer branch on `main` daily: `git pull --rebase origin main`.
+- `<name>` is your first name in lowercase: `develop/selman`, `develop/baris`, `develop/yusuf`, `develop/zanyar`. Never commit to someone else's `develop/` branch.
+- Open a `feature/` branch only when people actually share a feature (for example backend and web on the booking flow). Lowercase, hyphens: `feature/booking-flow`. Delete it after its PR is merged.
+- Keep branches close to `main`:
+  - Open small PRs from your branch to `main` often; merge at least every few days.
+  - Update your branch every day and after each merge: `git pull --rebase origin main`.
+  - After your PR is squash-merged, reset your personal branch to `main` before continuing: `git fetch origin && git reset --hard origin/main` (only when you have no unmerged work on it).
 
 ## 4. Commit messages
 
