@@ -10,7 +10,7 @@ Read in this order before your first change:
 
 1. This file
 2. [`STATUS.md`](STATUS.md): what is done, in progress and next
-3. [`../AGENTS.md`](../AGENTS.md) (agents) or [`../CONTRIBUTING.md`](../CONTRIBUTING.md) (humans): the rules
+3. [`docs/guides/AGENT_RULES.md`](guides/AGENT_RULES.md) (agents) or [`docs/guides/CONTRIBUTING.md`](guides/CONTRIBUTING.md) (humans): the rules
 4. The feature file for your task: [`features/`](features/README.md)
 5. The decisions it mentions: [`decisions/`](decisions/README.md)
 
@@ -68,7 +68,10 @@ smart-appointment/
 ├── docs/
 │   ├── PROJECT_MAP.md               this file
 │   ├── STATUS.md                    current state
-│   ├── LOGGING.md                   how to write logs, status and ADRs
+│   ├── guides/
+│   │   ├── AGENT_RULES.md           rules for AI agents (git, scope, clean code, naming, SOLID, hosting)
+│   │   ├── CONTRIBUTING.md          team rules (branches, commits, PRs, versions, secrets)
+│   │   └── LOGGING.md               how to write logs, status and ADRs
 │   ├── features/<feature>.md        scope, status, open questions, log per feature
 │   ├── decisions/NNNN-*.md          architecture decision records
 │   ├── srs/                         SRS PDF (source of requirements)
@@ -86,14 +89,14 @@ smart-appointment/
 │   ├── pull_request_template.md, CODEOWNERS, dependabot.yml
 │
 ├── .githooks/commit-msg             local AI-attribution check
+├── .claude/CLAUDE.md                Claude Code entry point (imports AGENT_RULES.md)
 ├── .claude/settings.json            shared Claude Code settings (attribution off, deny rules)
 ├── Makefile                         local commands that mirror CI (`make help`)
 ├── .markdownlint-cli2.jsonc         Markdown lint rules
 ├── .vscode/extensions.json          recommended editor extensions
 ├── docker-compose.yml               db (PostgreSQL 17), mailpit, backend
 ├── .env.example                     every environment variable with local values
-├── AGENTS.md, CLAUDE.md             agent rules
-├── CONTRIBUTING.md                  team rules
+├── AGENTS.md                        short entry point for agents (Codex, Cursor, ...) pointing here
 └── README.md                        overview and quick start
 ```
 
@@ -122,12 +125,12 @@ Find your task, then work only in the listed places.
 
 | If the task is... | Work in | Read first | Verify with | Log in |
 |---|---|---|---|---|
-| A new or changed endpoint | `api/openapi.yaml` first (own PR), then `backend/.../<feature>/` | feature file, CONTRIBUTING 6, AGENTS 14 | `./mvnw verify` | feature file |
+| A new or changed endpoint | `api/openapi.yaml` first (own PR), then `backend/.../<feature>/` | feature file, CONTRIBUTING 6, AGENT_RULES 14 | `./mvnw verify` | feature file |
 | Business rule (capacity, deadlines, status) | `backend/.../<feature>/<Name>Service` | SRS 2.2 and 2.5, feature file | unit test + `./mvnw verify` | feature file |
 | Waiting time / recommendation (Eq. 3, Eq. 4) | `backend/.../estimation/` | SRS 2.6, estimation file | unit tests, `ArchitectureTest` | estimation |
 | Database change | new `backend/src/main/resources/db/migration/V<n>__*.sql` | SRS 2.5, `V1__initial_schema.sql` | `BackendApplicationIT` (needs Docker) | feature file |
 | Cross-cutting (errors, security, rate limit, config) | `backend/.../common/<area>/` | ADR-0008 | `./mvnw verify` | platform |
-| New environment variable | `common/config/*Properties`, `application*.yml`, `.env.example` | AGENTS 14 | app starts with defaults | platform |
+| New environment variable | `common/config/*Properties`, `application*.yml`, `.env.example` | AGENT_RULES 14 | app starts with defaults | platform |
 | A web screen | `web/src/features/<screen-group>/` | feature file, `docs/design/` | `npm run lint && npm run build`, Vitest | feature file |
 | Shared UI component | `web/src/components/` | ADR-0001 | lint, Vitest | platform |
 | Android screen | `android/app/src/main/.../<feature>/` | android/README.md | `./gradlew assembleDebug` | feature file |
@@ -158,7 +161,7 @@ cd backend
 open target/site/jacoco/index.html   # coverage report
 ```
 
-Required tests: F5 capacity (including a concurrent booking test), F6 cancel/reschedule rules, F9 Eq. 3 and Eq. 4 with the SRS examples, every status transition (AGENTS 7).
+Required tests: F5 capacity (including a concurrent booking test), F6 cancel/reschedule rules, F9 Eq. 3 and Eq. 4 with the SRS examples, every status transition (AGENT_RULES 7).
 
 ### Web (once the Vite project exists)
 
@@ -207,7 +210,7 @@ App jobs run only when that app's files change and its build file exists. `ci-ok
 
 The web job expects these npm scripts in `web/package.json`: `lint`, `format`, `format:check`, `typecheck`, `test`, `build`. The Android job expects the ktlint Gradle plugin.
 
-Limits (functions, parameters, complexity, file length) and naming rules: AGENTS 11–13.
+Limits (functions, parameters, complexity, file length) and naming rules: AGENT_RULES 11–13.
 
 ## 7. Running locally
 
@@ -234,11 +237,11 @@ Profiles: `local` (default, compose), `prod` (hosted: JSON logs, rate limiting o
 | What is the state of the project? | `docs/STATUS.md` |
 | What happened in feature X and what is open? | `docs/features/<feature>.md` |
 | Why is it built this way? | `docs/decisions/` |
-| How do I write a log entry or ADR? | `docs/LOGGING.md` |
+| How do I write a log entry or ADR? | `docs/guides/LOGGING.md` |
 | What does the system have to do? | `docs/srs/` |
 | What should a screen look like? | `docs/design/` |
 | What does the API look like? | `api/openapi.yaml` |
-| What are the rules? | `AGENTS.md`, `CONTRIBUTING.md` |
+| What are the rules? | `docs/guides/AGENT_RULES.md`, `docs/guides/CONTRIBUTING.md` |
 
 ## 9. Keeping this map current
 

@@ -10,7 +10,7 @@ The team works with AI agents. Some tools add a `Co-Authored-By` trailer to comm
 
 ## Decision
 
-- No attribution to AI tools in commits, PRs or code (rule: `AGENTS.md` section 1).
+- No attribution to AI tools in commits, PRs or code (rule: `docs/guides/AGENT_RULES.md` section 1).
 - Three layers of enforcement: `.claude/settings.json` (Claude Code attribution off), `.githooks/commit-msg` (local), and the `No AI attribution` CI check (required by the branch ruleset).
 
 ## Consequences

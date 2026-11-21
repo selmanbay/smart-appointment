@@ -10,7 +10,7 @@ Most code will be written with AI agents by four people in a short time. Without
 
 ## Decision
 
-- Rules for humans and agents: `AGENTS.md` sections 11 (clean code), 12 (naming) and 13 (SOLID).
+- Rules for humans and agents: `docs/guides/AGENT_RULES.md` sections 11 (clean code), 12 (naming) and 13 (SOLID).
 - **Backend:** Spotless (google-java-format) for formatting, Checkstyle (`backend/config/checkstyle.xml`) for naming, size, complexity, coupling and hygiene, ArchUnit for feature boundaries and layering (`backend/config/README.md`).
 - **Web:** ESLint (`web/eslint.config.js`) with typescript-eslint strict type-checked rules, sonarjs, react-hooks, `boundaries` for feature isolation, naming conventions and size limits; Prettier for formatting.
 - **Repository:** `english-only`, `no-ai-attribution` and PR title checks.

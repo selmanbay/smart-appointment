@@ -11,9 +11,9 @@ Everyone works with different agents (Claude, GPT, ...) on different machines. I
 ## Decision
 
 - The repository is the single source. No separate database, shared chat or personal notes.
-- Three kinds of files: `docs/STATUS.md` (current state), `docs/features/<feature>.md` (scope and log), `docs/decisions/` (ADRs). Rules in `docs/LOGGING.md`.
+- Three kinds of files: `docs/STATUS.md` (current state), `docs/features/<feature>.md` (scope and log), `docs/decisions/` (ADRs). Rules in `docs/guides/LOGGING.md`.
 - Log and status updates are committed in the same PR as the work.
-- `AGENTS.md` makes agents read these files before starting and update them before finishing.
+- `docs/guides/AGENT_RULES.md` makes agents read these files before starting and update them before finishing.
 
 ## Consequences
 

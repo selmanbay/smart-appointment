@@ -21,6 +21,11 @@ In progress
 
 ## Log
 
+### 2026-11-21 · selman · docs
+
+- **Done:** Cleaned up the repository root: full agent rules moved to `docs/guides/AGENT_RULES.md`, team rules to `docs/guides/CONTRIBUTING.md`, the logging guide to `docs/guides/LOGGING.md`. The root keeps only `README.md` and a short `AGENTS.md` entry point; Claude Code's entry point is `.claude/CLAUDE.md`. All references and links were updated.
+- **State / next:** Not verified that Claude Code picks up `.claude/CLAUDE.md` in a fresh session; Codex and Cursor read the root `AGENTS.md`.
+
 ### 2026-11-21 · selman · infra
 
 - **Done:** Rebuilt CI as a standard pipeline: repo lint (English, actionlint, hadolint, markdownlint), separate backend lint / test / image jobs with uploaded reports, web and Android jobs ready for when those apps exist, one aggregated `ci-ok` check. Added a Security workflow (dependency review, CodeQL) and a `Makefile` that mirrors CI locally. Fixed the earlier CI failure (`hashFiles()` is not allowed in job conditions).
@@ -29,7 +34,7 @@ In progress
 
 ### 2026-11-21 · selman · docs
 
-- **Done:** Added `docs/PROJECT_MAP.md`: structure map with build markers, feature map, task routing table, test layers and commands per app, quality gates, local services. AGENTS.md, CLAUDE.md, README and the PR template now send everyone there first.
+- **Done:** Added `docs/PROJECT_MAP.md`: structure map with build markers, feature map, task routing table, test layers and commands per app, quality gates, local services. docs/guides/AGENT_RULES.md, CLAUDE.md, README and the PR template now send everyone there first.
 - **State / next:** Keep the map current in the same PR as structural changes (PROJECT_MAP section 9).
 
 ### 2026-11-21 · selman · backend

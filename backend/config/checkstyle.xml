@@ -17,7 +17,7 @@
     <property name="format" value="System\.(out|err)\.print|\.printStackTrace\(\)"/>
     <property name="message" value="Use the logger instead of System.out or printStackTrace."/>
   </module>
-  <!-- Suppressing warnings is not allowed (AGENTS.md section 11). -->
+  <!-- Suppressing warnings is not allowed (docs/guides/AGENT_RULES.md section 11). -->
   <module name="RegexpSingleline">
     <property name="format" value="@SuppressWarnings|CHECKSTYLE:OFF|NOSONAR"/>
     <property name="message" value="Do not suppress warnings; fix the code."/>

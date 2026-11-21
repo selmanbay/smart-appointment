@@ -15,4 +15,4 @@ The early planning notes mixed Turkish and English. Reports are written in Engli
 
 ## Consequences
 
-- Team members may talk to their agents in Turkish, but the agent writes English into the repository (`AGENTS.md` section 9).
+- Team members may talk to their agents in Turkish, but the agent writes English into the repository (`docs/guides/AGENT_RULES.md` section 9).

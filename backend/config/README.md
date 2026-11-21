@@ -49,7 +49,7 @@ Configuration for the backend quality gates (ADR-0007). All of these are wired i
 </plugin>
 ```
 
-Plugin versions are pinned in `pom.xml` (CONTRIBUTING.md section 7). `config/checkstyle.xml` is run with Checkstyle 14.4.0.
+Plugin versions are pinned in `pom.xml` (docs/guides/CONTRIBUTING.md section 7). `config/checkstyle.xml` is run with Checkstyle 14.4.0.
 
 ## ArchUnit rules
 

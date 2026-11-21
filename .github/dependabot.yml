@@ -1,4 +1,4 @@
-# Dependency updates arrive as weekly PRs (CONTRIBUTING.md section 7).
+# Dependency updates arrive as weekly PRs (docs/guides/CONTRIBUTING.md section 7).
 # Uncomment a block once that folder has code.
 version: 2
 updates:

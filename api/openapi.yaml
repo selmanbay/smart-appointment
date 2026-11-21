@@ -4,7 +4,7 @@ info:
   version: 0.0.0
   description: >
     CNG 491 Smart Appointment and Service Scheduling System REST API.
-    Endpoints will be added here before implementation (see CONTRIBUTING.md, section 6).
+    Endpoints will be added here before implementation (see docs/guides/CONTRIBUTING.md, section 6).
 servers:
   - url: http://localhost:8080/api/v1
     description: Local (docker compose)

@@ -1,6 +1,6 @@
 # main branch ruleset
 
-`main-protection.json` applies the rules from CONTRIBUTING.md sections 3 and 5 on GitHub:
+`main-protection.json` applies the rules from docs/guides/CONTRIBUTING.md sections 3 and 5 on GitHub:
 
 - `main` cannot be deleted or force-pushed, and history stays linear
 - Changes land only through PRs: at least one approval, resolved threads, squash merge only

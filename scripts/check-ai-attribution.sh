@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fails if the given text credits an AI tool (AGENTS.md section 1).
+# Fails if the given text credits an AI tool (docs/guides/AGENT_RULES.md section 1).
 # Usage: check-ai-attribution.sh <file>   or   ... | check-ai-attribution.sh
 set -euo pipefail
 export LC_ALL=C.UTF-8 2>/dev/null || export LC_ALL=en_US.UTF-8
@@ -26,6 +26,6 @@ done
 if printf '%s' "$text" | grep -qF '🤖'; then echo "robot emoji"; found=1; fi
 
 if [[ $found -eq 1 ]]; then
-  echo "ERROR: AI attribution found. Remove it (AGENTS.md section 1)." >&2
+  echo "ERROR: AI attribution found. Remove it (docs/guides/AGENT_RULES.md section 1)." >&2
   exit 1
 fi

@@ -18,7 +18,7 @@ The work split has not been decided yet. Fill in this table and `.github/CODEOWN
 ## 2. Tracking work
 
 - No ticket system (see ADR-0004). Who does what is agreed in the Tuesday meeting and the team chat.
-- The current state lives in `docs/STATUS.md`; the history of each feature lives in `docs/features/<feature>.md`. Rules: `docs/LOGGING.md`.
+- The current state lives in `docs/STATUS.md`; the history of each feature lives in `docs/features/<feature>.md`. Rules: `docs/guides/LOGGING.md`.
 - Each PR description names the SRS function or use case it touches (for example `F5, UC-3`).
 
 ## 3. Branches
@@ -119,7 +119,7 @@ A piece of work is done only when all of these are true:
 
 ## 12. Working with AI agents
 
-Everyone may work with Claude Code, Codex/GPT or similar agents. The shared rules are in `AGENTS.md`; Claude Code reads it through `CLAUDE.md`, Codex and Cursor read it directly.
+Everyone may work with Claude Code, Codex/GPT or similar agents. The shared rules are in `docs/guides/AGENT_RULES.md`. Claude Code reaches them through `.claude/CLAUDE.md`; Codex, Cursor and others through the short root `AGENTS.md`.
 
 - The person running the agent owns every commit it makes. Commits use that person's own git identity.
 - **No AI attribution:** no `Co-Authored-By: Claude/GPT/...`, "Generated with ..." or robot emoji in commits, PR titles, PR descriptions or code (ADR-0003). This is enforced in three places:
@@ -127,4 +127,4 @@ Everyone may work with Claude Code, Codex/GPT or similar agents. The shared rule
   2. `.githooks/commit-msg` rejects such commits locally. Run `./scripts/setup.sh` once after cloning.
   3. The `No AI attribution` CI check scans every commit and the PR text; a failing PR cannot be merged.
 - If you use another agent (Codex, Cursor, Copilot), turn off its co-author or signature option in that tool's own settings as well.
-- Agents never push to `main`, never force push, never change versions and never read `.env` (`AGENTS.md` sections 2, 5, 6).
+- Agents never push to `main`, never force push, never change versions and never read `.env` (`docs/guides/AGENT_RULES.md` sections 2, 5, 6).

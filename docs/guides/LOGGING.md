@@ -10,7 +10,7 @@ The project's memory lives in Markdown files in this repository. Whoever opens i
 | `docs/STATUS.md` | One-page snapshot: status of each feature, next steps, blockers | When a feature's status changes |
 | `docs/features/<feature>.md` | Scope, status, open questions and **log** of one feature | In every PR that touches that feature |
 | `docs/decisions/NNNN-*.md` | A lasting technical or product decision and its reasoning (ADR) | When a hard-to-reverse decision is made |
-| `AGENTS.md` | Stable working rules | Rarely, by team decision |
+| `docs/guides/AGENT_RULES.md` | Stable working rules | Rarely, by team decision |
 
 In short: **log** = what happened, **decision** = what we chose and why, **status** = where we are now.
 
@@ -49,7 +49,7 @@ One line: Not started | In progress | Testing | Done | Blocked: <reason>
 
 Rules:
 
-- **Newest entry first**, directly under the `## Log` heading. Old entries are never deleted or edited; correct a wrong entry with a new one.
+- **Newest entry first**, directly under the `## Log` heading. Old entries are never deleted or edited; correct a wrong entry with a new one. The only exception is updating a file path or link after that file moved.
 - Heading line: `### YYYY-MM-DD · <person> · <area>`. The person is the human who did the work or ran the agent (never the agent's name). Area: `backend`, `web`, `android`, `api`, `infra`, `docs`.
 - **Done** is required; the other lines only when useful. Two to six lines in total; long explanations belong in the PR or an ADR.
 - Write the **outcome**, not the code: not "added a method to BookingService" but "Booking now checks capacity under a row lock".
@@ -91,7 +91,7 @@ Format and numbering: `docs/decisions/README.md`. An accepted ADR is never edite
 
 ## 5. For agents
 
-Agents both read and write these files (`AGENTS.md` section 10):
+Agents both read and write these files (`docs/guides/AGENT_RULES.md` section 10):
 
 1. **Before starting:** read `docs/STATUS.md`, the relevant `docs/features/<feature>.md` and the ADRs it mentions.
 2. **When finished, in the same commit or PR:** add a log entry; if the status changed, update `## Status` and `STATUS.md`; if there is a new decision, draft an ADR as `Proposed` and have a human approve it.

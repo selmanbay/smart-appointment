@@ -1,6 +1,6 @@
 # Project status
 
-The current state of the project. Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first for the structure and commands. Update rules: [`LOGGING.md`](LOGGING.md) section 3.
+The current state of the project. Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first for the structure and commands. Update rules: [`guides/LOGGING.md`](guides/LOGGING.md) section 3.
 
 Last updated: 2026-11-21
 
@@ -28,7 +28,7 @@ Team rules, folder structure and the backend skeleton are ready. `./mvnw verify`
 1. Run `docker compose up --build` once Docker is installed and confirm the backend starts and `BackendApplicationIT` passes
 2. Web skeleton: Vite + React + TypeScript with the existing `eslint.config.js` and Prettier, web service in `docker-compose.yml`
 3. Auth and organization endpoints in `api/openapi.yaml`
-4. Work split (CONTRIBUTING.md section 1 and CODEOWNERS)
+4. Work split (docs/guides/CONTRIBUTING.md section 1 and CODEOWNERS)
 
 ## Blockers
 

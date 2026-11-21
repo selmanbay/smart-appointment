@@ -59,7 +59,7 @@ export default tseslint.config(
         },
       ],
 
-      // Size and complexity limits (AGENTS.md section 11).
+      // Size and complexity limits (docs/guides/AGENT_RULES.md section 11).
       complexity: ['error', 10],
       'max-depth': ['error', 3],
       'max-params': ['error', 4],
@@ -68,7 +68,7 @@ export default tseslint.config(
       'max-nested-callbacks': ['error', 3],
       'sonarjs/cognitive-complexity': ['error', 12],
 
-      // Naming (AGENTS.md section 12).
+      // Naming (docs/guides/AGENT_RULES.md section 12).
       '@typescript-eslint/naming-convention': [
         'error',
         { selector: 'default', format: ['camelCase'], leadingUnderscore: 'allow' },

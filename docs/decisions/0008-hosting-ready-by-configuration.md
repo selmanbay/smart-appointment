@@ -82,7 +82,7 @@ app:
 ## Consequences
 
 - Going live is mostly configuration: set environment variables, enable rate limiting, point SMTP and database at real services, put a reverse proxy with HTTPS in front.
-- Slightly more structure on day one (properties records, interfaces in `common`), which agents must follow (`AGENTS.md` section 14).
+- Slightly more structure on day one (properties records, interfaces in `common`), which agents must follow (`docs/guides/AGENT_RULES.md` section 14).
 - Redis, ShedLock, Playwright and SonarCloud are deferred but have a defined place.
 
 ## Alternatives considered

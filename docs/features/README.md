@@ -1,6 +1,6 @@
 # Feature logs
 
-Each feature keeps its scope, status, open questions and log in its own file. Writing rules: [`../LOGGING.md`](../LOGGING.md).
+Each feature keeps its scope, status, open questions and log in its own file. Writing rules: [`../guides/LOGGING.md`](../guides/LOGGING.md).
 
 | File | SRS | Backend package |
 |---|---|---|

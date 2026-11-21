@@ -1,13 +1,13 @@
 # Architecture decision records (ADR)
 
-Every decision that is hard to reverse, or that someone will later ask "why did we do it this way?" about, gets one file here. When to write one: [`../LOGGING.md`](../LOGGING.md) section 4.
+Every decision that is hard to reverse, or that someone will later ask "why did we do it this way?" about, gets one file here. When to write one: [`../guides/LOGGING.md`](../guides/LOGGING.md) section 4.
 
 ## Rules
 
 - File name: `NNNN-short-title.md` (four digits, next free number).
 - Status: `Proposed` → `Accepted` → if replaced, `Superseded by ADR-NNNN`.
 - Agents write ADRs only as `Proposed`; a human marks them `Accepted`.
-- An accepted ADR is never edited. If the decision changes, write a new ADR and update the old one's status line.
+- An accepted ADR is never edited. If the decision changes, write a new ADR and update the old one's status line. Updating a file path or link after a move is allowed.
 - Keep it under one page.
 
 ## Template
