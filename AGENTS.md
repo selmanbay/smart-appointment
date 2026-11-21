@@ -5,6 +5,8 @@ Humans follow `CONTRIBUTING.md`; agents follow this file **and** `CONTRIBUTING.m
 
 The human who runs the agent is the author and is responsible for everything it commits.
 
+**Start every task with [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md).** It maps the folders, routes each kind of task to the files to change and read, and lists the test and check commands. Then follow section 10 below.
+
 ## 1. No AI attribution (hard rule)
 
 Commits, PR titles, PR bodies, code comments and docs must not credit or mention an AI tool. Never add:
@@ -85,15 +87,17 @@ Everything in this repository is in English: code, identifiers, comments, commit
 Every agent works on a different machine. The only shared memory is this repository, so keep it current. Full rules: `docs/LOGGING.md`.
 
 **Before starting a task, read:**
-1. `docs/STATUS.md`
-2. The feature file for the task: `docs/features/<feature>.md` (scope, status, open questions, log)
-3. Every ADR that file or the task mentions (`docs/decisions/`)
+1. `docs/PROJECT_MAP.md` (where to work, how to verify)
+2. `docs/STATUS.md`
+3. The feature file for the task: `docs/features/<feature>.md` (scope, status, open questions, log)
+4. Every ADR that file or the task mentions (`docs/decisions/`)
 
 **Before finishing, in the same branch / PR:**
 1. Add an entry at the top of the feature's `## Log` section (format in `docs/LOGGING.md` section 2). Write only verified results; if something is untested, say so.
 2. If the feature status changed, update its `## Status` line and the matching row in `docs/STATUS.md`.
 3. Tick or add questions under `## Open questions`.
-4. If you made a decision that is hard to reverse (architecture, data model, API shape, library choice, an SRS rule clarification), write an ADR with status `Proposed` and tell the human. Never mark an ADR `Accepted` yourself.
+4. If you added or moved a folder, feature, command or check, update `docs/PROJECT_MAP.md`.
+5. If you made a decision that is hard to reverse (architecture, data model, API shape, library choice, an SRS rule clarification), write an ADR with status `Proposed` and tell the human. Never mark an ADR `Accepted` yourself.
 
 Do not edit or delete earlier log entries or accepted ADRs.
 

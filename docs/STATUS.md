@@ -1,6 +1,6 @@
 # Project status
 
-The first page everyone reads, human or agent. Update rules: [`LOGGING.md`](LOGGING.md) section 3.
+The current state of the project. Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first for the structure and commands. Update rules: [`LOGGING.md`](LOGGING.md) section 3.
 
 Last updated: 2026-11-21
 

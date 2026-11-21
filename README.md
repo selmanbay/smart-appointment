@@ -55,6 +55,7 @@ docker compose up
 
 Read these before your first change:
 
+- [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md): structure map, where to work for each task, test and check commands
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): branches, commits, PRs, versions, secrets
 - [`AGENTS.md`](AGENTS.md): rules for AI coding agents
 - [`docs/LOGGING.md`](docs/LOGGING.md): how project status, feature logs and decisions are kept in the repo

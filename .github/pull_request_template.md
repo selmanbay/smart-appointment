@@ -17,6 +17,7 @@
 - [ ] `api/openapi.yaml` updated if the API changed
 - [ ] Tests added for new business logic
 - [ ] Feature log updated (`docs/features/<feature>.md`), and `docs/STATUS.md` if the status changed
+- [ ] `docs/PROJECT_MAP.md` updated if folders, features, commands or checks changed
 - [ ] New hard-to-reverse decision recorded as an ADR (`docs/decisions/`)
 - [ ] No secrets (.env, keys, tokens) added
 - [ ] Runs with `docker compose up`
