@@ -27,7 +27,13 @@ src/
     owner-settings/       services, staff, working hours, rules
     admin-organizations/  system admin organizations (Figure 6)
     analytics/            workload and rates (after the MVP)
+e2e/            Playwright end-to-end tests against docker compose
 ```
+
+## Tests (ADR-0009)
+
+- Unit and component tests sit next to the file they test: `features/booking/StaffCard.tsx` → `features/booking/StaffCard.test.tsx` (Vitest + React Testing Library).
+- End-to-end tests live in `e2e/`, one file per user flow (`book-appointment.spec.ts`).
 
 ## Screens (SRS 1.4.1.2)
 

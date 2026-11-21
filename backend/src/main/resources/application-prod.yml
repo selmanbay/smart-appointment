@@ -1,0 +1,14 @@
+# Hosted environments: JSON logs, rate limiting on unless explicitly disabled.
+logging:
+  structured:
+    format:
+      console: ecs
+
+app:
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+
+management:
+  endpoint:
+    health:
+      show-details: never

@@ -96,7 +96,9 @@
       <property name="ignoreAnnotationCanonicalNames" value="org.junit.jupiter.api.io.TempDir"/>
     </module>
     <module name="FinalClass"/>
-    <module name="HideUtilityClassConstructor"/>
+    <module name="HideUtilityClassConstructor">
+      <property name="ignoreAnnotatedBy" value="SpringBootApplication"/>
+    </module>
     <module name="TodoComment">
       <property name="format" value="(?i)\b(TODO|FIXME)\b(?!\([a-z]+\): .+)"/>
     </module>

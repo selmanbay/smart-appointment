@@ -1,6 +1,6 @@
 # Backend quality tooling
 
-Configuration for the backend quality gates (ADR-0007). Wire these into `pom.xml` when the Spring Boot project is generated, so that `./mvnw verify` fails on any violation and CI enforces it.
+Configuration for the backend quality gates (ADR-0007). All of these are wired into `pom.xml`, so `./mvnw verify` fails on any violation and CI enforces it.
 
 | Tool | Purpose | Config |
 |---|---|---|
@@ -49,11 +49,11 @@ Configuration for the backend quality gates (ADR-0007). Wire these into `pom.xml
 </plugin>
 ```
 
-Plugin versions are pinned in `pom.xml` on the day the project is generated (CONTRIBUTING.md section 7). `config/checkstyle.xml` was tested with Checkstyle 10.21.4.
+Plugin versions are pinned in `pom.xml` (CONTRIBUTING.md section 7). `config/checkstyle.xml` is run with Checkstyle 14.4.0.
 
-## ArchUnit rules to implement
+## ArchUnit rules
 
-Add `com.tngtech.archunit:archunit-junit5` as a test dependency and encode these rules in `ArchitectureTest`:
+Implemented in `src/test/java/com/smartappointment/ArchitectureTest.java` (rule 2 in `FeatureRules.java`):
 
 1. Feature packages are free of cycles: `slices().matching("com.smartappointment.(*)..").should().beFreeOfCycles()`.
 2. A feature does not access another feature's `..repository..` or entity classes; only its service.

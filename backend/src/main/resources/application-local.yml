@@ -1,0 +1,4 @@
+# docker compose and local runs: Mailpit SMTP, rate limiting off, verbose app logs.
+logging:
+  level:
+    com.smartappointment: DEBUG

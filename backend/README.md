@@ -1,53 +1,81 @@
 # backend
 
-Spring Boot REST API. No code yet.
+Spring Boot REST API for Smart Appointment. The skeleton is in place: configuration, security, rate limiting, error handling, the database schema (Flyway V1) and the quality gates. Feature code (controllers, services, entities) is added per feature.
 
-## Planned stack
+## Stack
 
-- Java 21 (Temurin), Spring Boot 4.0.x, Maven wrapper
-- Spring Web, Security (JWT), Data JPA, Validation, Mail
-- Flyway (schema), springdoc-openapi, Testcontainers (tests)
-- Firebase Admin SDK (FCM, after the MVP)
+- Java 21 (Temurin), Spring Boot 4.2.0, Maven wrapper (`./mvnw`)
+- Spring Web MVC, Security, Data JPA, Validation, Mail, Actuator
+- PostgreSQL 17, Flyway
+- Bucket4j (rate limiting)
+- Tests: JUnit 5, AssertJ, Spring Boot test slices, Testcontainers, ArchUnit
+- Quality: Spotless (google-java-format), Checkstyle 14.4.0, JaCoCo (`config/README.md`)
 
-The project will be generated with start.spring.io; the versions current on that day are pinned in `pom.xml`.
+All versions are pinned in `pom.xml`.
 
-## Package layout (ADR-0001)
+## Run
 
-```
-com.smartappointment
-  common/
-    config/        typed @ConfigurationProperties records (the only place reading env vars)
-    security/      JWT, CORS, security headers
-    ratelimit/     rate limit filter + RateLimiter interface (off locally)
-    web/           RFC 7807 errors, correlation id, pagination
-    observability/ health, metrics, logging setup
-    jobs/          scheduled job support
-  auth/            F1 sign-in, JWT, roles
-  organization/    F2
-  catalog/         F3 services, staff
-  schedule/        F4 working hours, rules, change requests
-  booking/         F5 slots, F6 cancel/reschedule, F8 status
-  estimation/      F9 Eq. 3 (EWMA) and Eq. 4 (waiting time)
-  notification/    F7 SMTP, FCM, reminder job
-  analytics/       F10
-  feedback/        F11
+With Docker (recommended, from the repository root):
+
+```bash
+docker compose up --build
 ```
 
-Each feature package holds its own controller, service, repository, entities and `dto/`. The data model follows SRS section 2.5, Table 9. Feature logs: `docs/features/`.
+The API listens on http://localhost:8080, health on http://localhost:8080/actuator/health. Outgoing e-mail appears in Mailpit at http://localhost:8025.
 
-## Configuration and hosting (ADR-0008)
+Without Docker for the app itself (PostgreSQL still needed, e.g. `docker compose up db mailpit`):
 
-```
-src/main/resources/
-  application.yml          safe defaults, every env-specific value as ${ENV_VAR:default}
-  application-local.yml    docker compose: Mailpit, rate limiting off, permissive CORS
-  application-prod.yml     JSON logs, rate limiting on, strict CORS
-  db/migration/            Flyway migrations
+```bash
+cd backend
+./mvnw spring-boot:run
 ```
 
-The same image runs locally and when hosted; only environment variables change. See `.env.example`.
+## Build and test
 
-## Quality and tests
+```bash
+./mvnw spotless:apply     # format
+./mvnw verify             # checkstyle, unit + slice + architecture tests, integration tests, coverage
+```
 
-- Lint and architecture rules: `config/README.md` (ADR-0007).
-- Test layers (unit, slice, integration `*IT`, ArchUnit, contract, load): ADR-0008.
+Integration tests (`*IT`) start PostgreSQL with Testcontainers and are skipped when Docker is not available.
+
+## Layout (ADR-0001, ADR-0009)
+
+```
+backend/
+  pom.xml, mvnw, Dockerfile
+  config/checkstyle.xml           lint rules (ADR-0007)
+  load-tests/                     k6 scenarios for SRS P1, P2
+  src/main/java/com/smartappointment/
+    BackendApplication.java
+    common/
+      config/          typed @ConfigurationProperties records (the only place reading env vars)
+      security/        stateless security, CORS
+      ratelimit/       RateLimiter interface, in-memory Bucket4j implementation, filter (off locally)
+      web/             RFC 7807 error handling, correlation id
+      observability/   health, metrics, logging setup
+      jobs/            scheduled job support
+    auth/ organization/ catalog/ schedule/ booking/
+    estimation/ notification/ analytics/ feedback/      one package per feature (empty for now)
+  src/main/resources/
+    application.yml            safe defaults, env vars with local fallbacks
+    application-local.yml      docker compose / local runs
+    application-prod.yml       hosted: JSON logs, rate limiting on
+    db/migration/V1__initial_schema.sql   SRS Table 9
+  src/test/java/com/smartappointment/
+    ArchitectureTest.java, FeatureRules.java     ArchUnit rules
+    BackendApplicationIT.java                    full app + PostgreSQL
+    common/...                                   unit and slice tests
+    <feature>/                                   tests mirror the main packages
+```
+
+## Database
+
+`V1__initial_schema.sql` creates the eleven tables from SRS section 2.5 with its integrity constraints (unique e-mail, capacity ≥ 1, rating 1–5, status values, start before end, working-hour breaks inside the shift). Notes:
+
+- `user` is reserved in PostgreSQL, so the table is `app_user`.
+- IDs are `BIGINT` identity columns; times are `timestamptz` in UTC.
+- `notification.provider_response` stores the FCM / SMTP result (SRS 1.4.1.1).
+- Rules that need data from several rows (capacity under concurrency, appointments inside working hours, one active booking limit) are enforced in the services, not in SQL.
+
+Never edit a merged migration; add `V2__...`.

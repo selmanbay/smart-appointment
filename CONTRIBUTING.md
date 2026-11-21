@@ -6,11 +6,11 @@ These rules let four people, each working with AI agents, share one repository w
 
 | Folder | Owner | Contents |
 |---|---|---|
-| `backend/` |  | Spring Boot REST API |
-| `web/` |  | React + Vite + TypeScript |
-| `android/` |  | Kotlin + Jetpack Compose |
+| `backend/` |  | Spring Boot REST API and its tests |
+| `web/` |  | React + Vite + TypeScript and its tests |
+| `android/` |  | Kotlin + Jetpack Compose and its tests |
 | `api/` |  | `openapi.yaml`, the API contract |
-| `infra/`, `.github/`, `docker-compose.yml` |  | Docker, CI, repository rules |
+| `.github/`, `scripts/`, `docker-compose.yml` |  | Docker, CI, repository rules |
 | `docs/` | Everyone | SRS, design, status, logs, decisions |
 
 The work split has not been decided yet. Fill in this table and `.github/CODEOWNERS` once it is.

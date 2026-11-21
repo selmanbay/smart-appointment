@@ -7,22 +7,31 @@ Customers book, cancel and reschedule appointments on the web and on Android. Or
 
 ## Status
 
-The repository skeleton and team rules are in place; there is no application code yet. Current state: [`docs/STATUS.md`](docs/STATUS.md).
+Team rules, the backend skeleton (configuration, security, rate limiting, database schema, quality gates) and the folder structure are in place. Feature code has not started. Current state: [`docs/STATUS.md`](docs/STATUS.md).
 
 ## Layout
 
 ```
 smart-appointment/
-  backend/             Spring Boot REST API (Java 21), one package per feature
-  web/                 React + Vite + TypeScript, one folder per feature
+  backend/             Spring Boot REST API (Java 21)
+    src/main/          code, one package per feature
+    src/test/          unit, slice, integration (*IT) and architecture tests
+    load-tests/        k6 load tests (SRS P1, P2)
+  web/                 React + Vite + TypeScript
+    src/               code, one folder per feature; unit tests next to each file
+    e2e/               Playwright end-to-end tests
   android/             Kotlin + Jetpack Compose customer app (after the MVP)
-  api/                 openapi.yaml, the single API contract
-  infra/               k6 load tests, later deployment files
+    app/src/main/      code
+    app/src/test/      local unit tests
+    app/src/androidTest/  instrumented tests
+  api/                 openapi.yaml, the contract shared by all apps
   docs/                SRS, design, status, feature logs, decisions
   scripts/             setup and repository checks
   .github/             CI, CODEOWNERS, PR template, branch ruleset
   docker-compose.yml   all local services with pinned versions
 ```
+
+Each app owns its code, tests and build files (ADR-0009).
 
 ## Getting started
 
