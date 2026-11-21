@@ -28,9 +28,11 @@ jobs:
       # An app is built only once its build file exists.
       - id: exists
         run: |
-          echo "backend=$([ -f backend/pom.xml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "web=$([ -f web/package-lock.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "android=$([ -f android/gradlew ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          {
+            echo "backend=$([ -f backend/pom.xml ] && echo true || echo false)"
+            echo "web=$([ -f web/package-lock.json ] && echo true || echo false)"
+            echo "android=$([ -f android/gradlew ] && echo true || echo false)"
+          } >> "$GITHUB_OUTPUT"
       - uses: dorny/paths-filter@v4
         id: filter
         with:
