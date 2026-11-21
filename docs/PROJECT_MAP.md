@@ -67,6 +67,7 @@ smart-appointment/
 │       └── androidTest/java/...     instrumented UI tests
 │
 ├── api/openapi.yaml                 API contract shared by all apps; change it first (CONTRIBUTING 6)
+├── redocly.yaml                     contract lint rules (`make api-lint`)
 │
 ├── docs/
 │   ├── PROJECT_MAP.md               this file
@@ -198,7 +199,7 @@ The `Makefile` runs the same checks locally as CI. Run `make help` for the list;
 
 | Check | Local command | CI workflow / job | Required |
 |---|---|---|---|
-| English only, Markdown lint | `make repo-lint` | `CI / repo-lint` | via `ci-ok` |
+| English only, Markdown lint, API contract lint (Redocly) | `make repo-lint` | `CI / repo-lint` | via `ci-ok` |
 | Workflow lint (actionlint), Dockerfile lint (hadolint) | — (CI only) | `CI / repo-lint` | via `ci-ok` |
 | Backend formatting (Spotless), Checkstyle | `make backend-lint` | `CI / backend-lint` | via `ci-ok` |
 | Backend unit, slice, ArchUnit, integration tests, coverage | `make backend-verify` | `CI / backend-test` (reports as artifact) | via `ci-ok` |
@@ -228,6 +229,7 @@ make verify                  # all lint and tests, as in CI
 |---|---|---|
 | Backend API | <http://localhost:8080/api/v1> | 401 for everything until auth (F1) exists |
 | Health | <http://localhost:8080/actuator/health> | |
+| Swagger UI | <http://localhost:8080/swagger-ui/index.html> | contract and implemented API side by side (ADR-0014); off in prod |
 | PostgreSQL | `localhost:5432` | credentials in `.env` |
 | Mailpit | <http://localhost:8025> | every e-mail the backend sends |
 | Web | <http://localhost:5173> | `npm run dev` in `web/`, or nginx via `make up`; demo accounts on the sign-in page |

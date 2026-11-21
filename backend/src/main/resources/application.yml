@@ -47,6 +47,19 @@ logging:
   pattern:
     correlation: "[%X{correlationId:-}] "
 
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+    # The contract first, then what the code currently implements (ADR-0014).
+    urls:
+      - name: Contract (api/openapi.yaml)
+        url: /openapi.yaml
+      - name: Implemented (generated from code)
+        url: /v3/api-docs
+    urls-primary-name: Contract (api/openapi.yaml)
+
 app:
   mail:
     from: ${MAIL_FROM:no-reply@smart-appointment.local}

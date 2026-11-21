@@ -6,6 +6,7 @@ Spring Boot REST API for Smart Appointment. The skeleton is in place: configurat
 
 - Java 21 (Temurin), Spring Boot 4.2.0, Maven wrapper (`./mvnw`)
 - Spring Web MVC, Security, Data JPA, Validation, Mail, Actuator
+- springdoc-openapi 3.2.1 (Swagger UI for the contract and the implementation)
 - PostgreSQL 17, Flyway
 - Bucket4j (rate limiting)
 - Tests: JUnit 5, AssertJ, Spring Boot test slices, Testcontainers, ArchUnit
@@ -21,7 +22,7 @@ With Docker (recommended, from the repository root):
 docker compose up --build
 ```
 
-The API listens on <http://localhost:8080>, health on <http://localhost:8080/actuator/health>. Outgoing e-mail appears in Mailpit at <http://localhost:8025>.
+The API listens on <http://localhost:8080>, health on <http://localhost:8080/actuator/health>, Swagger UI on <http://localhost:8080/swagger-ui/index.html> (ADR-0014). Outgoing e-mail appears in Mailpit at <http://localhost:8025>.
 
 Without Docker for the app itself (PostgreSQL still needed, e.g. `docker compose up db mailpit`):
 

@@ -1,36 +1,1476 @@
 openapi: 3.1.0
 info:
   title: Smart Appointment API
-  version: 0.0.0
-  description: >
-    CNG 491 Smart Appointment and Service Scheduling System REST API.
-    Endpoints will be added here before implementation (see docs/guides/CONTRIBUTING.md, section 6).
+  version: 0.1.0
+  summary: REST contract between the Spring Boot backend, the React web app and the Android app.
+  description: |
+    Contract-first API for the Smart Appointment and Service Scheduling System (CNG 491).
+    Endpoints are written here before they are implemented (docs/guides/CONTRIBUTING.md section 6).
+
+    Conventions
+    - All paths are under `/api/v1`. Times are ISO-8601 with offset and stored in UTC; dates are `YYYY-MM-DD`
+      in the organization's time zone.
+    - Errors use RFC 7807 problem details (`application/problem+json`).
+    - Lists that can grow are paginated with `page` (0-based) and `size` (max 100).
+    - Every operation belongs to a rate-limit group (`x-rate-limit-group`: auth, booking or default, ADR-0008).
+    - `x-srs` links an operation to the SRS use case or function; `x-mvp: true` marks operations in the MVP (ADR-0012).
+  license:
+    name: Proprietary (course project)
+    identifier: LicenseRef-Proprietary
 servers:
   - url: http://localhost:8080/api/v1
     description: Local (docker compose)
+security:
+  - bearerAuth: []
+
 tags:
   - name: auth
-    description: F1 - registration, login, roles
+    description: Sign-up, sign-in and the current account (F1, UC-1, UC-2).
   - name: organizations
-    description: F2 - organization management
+    description: Organizations, owners and branding (F2, UC-13, UC-16).
   - name: services
-    description: F3 - services and staff assignments
+    description: Services an organization offers and their booking rules (F3, F4, UC-11, UC-12).
   - name: staff
-    description: F3/F4 - staff, working hours, schedule change requests
-  - name: appointments
-    description: F5/F6/F8 - slots, booking, cancel, reschedule, status
-  - name: recommendations
-    description: F9 - waiting-time estimate and staff recommendation
-  - name: analytics
-    description: F10 - workload and rates
+    description: Staff members and their service assignments (F3, UC-11).
+  - name: schedule
+    description: Working hours and schedule change requests (F4, UC-9, UC-10, UC-12).
+  - name: booking
+    description: Staff recommendation, free slots and appointments (F5, F6, F8, F9, UC-3 to UC-6, UC-8, UC-14, UC-18, UC-19).
   - name: feedback
-    description: F11 - ratings and comments
-paths: {}
+    description: Ratings and comments on completed appointments (F11, UC-7).
+  - name: analytics
+    description: Workload, waiting time, cancellation and no-show figures (F10, UC-15).
+
+paths:
+  # ---------------------------------------------------------------- auth
+  /auth/register:
+    post:
+      tags: [auth]
+      operationId: register
+      summary: Create a customer account
+      x-srs: UC-1
+      x-rate-limit-group: auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201':
+          description: Account created and signed in.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/login:
+    post:
+      tags: [auth]
+      operationId: login
+      summary: Sign in with e-mail and password
+      x-srs: UC-2
+      x-mvp: true
+      x-rate-limit-group: auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+            example: { email: alex.morgan@example.com, password: correct-horse-battery }
+      responses:
+        '200':
+          description: Signed in.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /me:
+    get:
+      tags: [auth]
+      operationId: getCurrentAccount
+      summary: The signed-in account
+      x-srs: UC-2
+      x-mvp: true
+      x-rate-limit-group: default
+      responses:
+        '200':
+          description: Current account.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Account' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /me/device-token:
+    put:
+      tags: [auth]
+      operationId: updateDeviceToken
+      summary: Register the Android device for push notifications
+      x-srs: F7
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DeviceTokenRequest' }
+      responses:
+        '204': { description: Token saved. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ---------------------------------------------------------------- organizations
+  /organizations:
+    get:
+      tags: [organizations]
+      operationId: listOrganizations
+      summary: Search organizations (system admin)
+      x-srs: UC-16
+      x-rate-limit-group: default
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Size' }
+        - name: query
+          in: query
+          description: Matches organization name or owner name.
+          schema: { type: string, maxLength: 100 }
+        - name: isActive
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: One page of organizations.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrganizationPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [organizations]
+      operationId: createOrganization
+      summary: Create an organization and its owner account (system admin)
+      x-srs: UC-16
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrganizationRequest' }
+      responses:
+        '201':
+          description: Organization created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /organizations/{organizationId}:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [organizations]
+      operationId: getOrganization
+      summary: Organization profile (public)
+      x-srs: UC-13
+      x-mvp: true
+      x-rate-limit-group: default
+      security: []
+      responses:
+        '200':
+          description: Organization.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [organizations]
+      operationId: updateOrganization
+      summary: Edit profile, branding, owner or active flag
+      description: Owners may change name, address, time zone, logo and terminology; only the system admin may change the owner or the active flag.
+      x-srs: UC-13, UC-16
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateOrganizationRequest' }
+      responses:
+        '200':
+          description: Updated organization.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Organization' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ---------------------------------------------------------------- services
+  /organizations/{organizationId}/services:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [services]
+      operationId: listServices
+      summary: Active services of an organization (public)
+      x-srs: UC-3
+      x-mvp: true
+      x-rate-limit-group: default
+      security: []
+      responses:
+        '200':
+          description: Services.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Service' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [services]
+      operationId: createService
+      summary: Add a service (owner)
+      x-srs: UC-11
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ServiceRequest' }
+      responses:
+        '201':
+          description: Service created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Service' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /services/{serviceId}:
+    parameters:
+      - { $ref: '#/components/parameters/ServiceId' }
+    patch:
+      tags: [services]
+      operationId: updateService
+      summary: Edit or deactivate a service (owner)
+      x-srs: UC-11, UC-12
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateServiceRequest' }
+      responses:
+        '200':
+          description: Updated service.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Service' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /services/{serviceId}/rule:
+    parameters:
+      - { $ref: '#/components/parameters/ServiceId' }
+    get:
+      tags: [services]
+      operationId: getAppointmentRule
+      summary: Booking and cancellation rule of a service
+      description: Returns 404 when the service has no rule; booking limits then do not apply (SRS 2.5).
+      x-srs: UC-12
+      x-mvp: true
+      x-rate-limit-group: default
+      security: []
+      responses:
+        '200':
+          description: Rule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AppointmentRule' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [services]
+      operationId: setAppointmentRule
+      summary: Set the booking and cancellation rule (owner)
+      x-srs: UC-12
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AppointmentRule' }
+      responses:
+        '200':
+          description: Rule saved.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AppointmentRule' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ---------------------------------------------------------------- staff
+  /organizations/{organizationId}/staff:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [staff]
+      operationId: listStaff
+      summary: Staff members of an organization (owner)
+      x-srs: UC-11
+      x-rate-limit-group: default
+      parameters:
+        - name: isActive
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Staff members.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/StaffMember' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [staff]
+      operationId: createStaffMember
+      summary: Add a staff member and their account (owner)
+      x-srs: UC-11
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateStaffRequest' }
+      responses:
+        '201':
+          description: Staff member created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StaffMember' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /staff/{staffId}:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    patch:
+      tags: [staff]
+      operationId: updateStaffMember
+      summary: Edit title, capacity or active flag (owner)
+      x-srs: UC-11, UC-12
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateStaffRequest' }
+      responses:
+        '200':
+          description: Updated staff member.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StaffMember' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /staff/{staffId}/services:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    put:
+      tags: [staff]
+      operationId: setStaffServices
+      summary: Replace the services a staff member provides (owner)
+      x-srs: UC-11
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [serviceIds]
+              properties:
+                serviceIds:
+                  type: array
+                  items: { type: integer, format: int64 }
+                  uniqueItems: true
+      responses:
+        '204': { description: Assignments saved. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ---------------------------------------------------------------- schedule
+  /staff/{staffId}/working-hours:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    get:
+      tags: [schedule]
+      operationId: getWorkingHours
+      summary: Weekly working hours of a staff member
+      x-srs: UC-9, UC-12
+      x-mvp: true
+      x-rate-limit-group: default
+      responses:
+        '200':
+          description: One entry per working day.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WorkingHours' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [schedule]
+      operationId: setWorkingHours
+      summary: Replace the weekly working hours
+      description: |
+        Applied immediately when no booked appointment falls outside the new hours. Otherwise nothing changes
+        and the response is 409 with the conflicting appointments; the staff member then submits a schedule
+        change request for owner approval (UC-10).
+      x-srs: UC-9, UC-12
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: '#/components/schemas/WorkingHours' }
+              maxItems: 7
+      responses:
+        '200':
+          description: Working hours saved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WorkingHours' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: The new hours conflict with booked appointments.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ScheduleConflictProblem' }
+
+  /staff/{staffId}/schedule-change-requests:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    post:
+      tags: [schedule]
+      operationId: createScheduleChangeRequest
+      summary: Ask the owner to approve hours that conflict with bookings (staff)
+      x-srs: UC-9
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScheduleChangeRequestInput' }
+      responses:
+        '201':
+          description: Request created and waiting for approval.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleChangeRequest' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /organizations/{organizationId}/schedule-change-requests:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [schedule]
+      operationId: listScheduleChangeRequests
+      summary: Schedule change requests of an organization (owner)
+      x-srs: UC-10
+      x-rate-limit-group: default
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/ScheduleChangeStatus' }
+      responses:
+        '200':
+          description: Requests, newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ScheduleChangeRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /schedule-change-requests/{requestId}/decision:
+    parameters:
+      - name: requestId
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      tags: [schedule]
+      operationId: decideScheduleChangeRequest
+      summary: Approve or reject a schedule change (owner)
+      description: Approving cancels the conflicting appointments and notifies their customers; the cancellation deadline does not apply (SRS 2.5).
+      x-srs: UC-10, UC-20
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [APPROVED, REJECTED]
+      responses:
+        '200':
+          description: Decided request.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleChangeRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  # ---------------------------------------------------------------- booking
+  /services/{serviceId}/staff-recommendations:
+    parameters:
+      - { $ref: '#/components/parameters/ServiceId' }
+    get:
+      tags: [booking]
+      operationId: listStaffRecommendations
+      summary: Staff who provide the service, ranked by estimated wait
+      description: |
+        Ranked by estimated waiting time (SRS Eq. 4, using learned durations from Eq. 3); ties are broken by mean
+        customer rating. The first entry is the recommendation (UC-18). Computed on request, not stored.
+      x-srs: UC-3, UC-18, UC-19
+      x-mvp: true
+      x-rate-limit-group: default
+      parameters:
+        - { $ref: '#/components/parameters/Date' }
+      responses:
+        '200':
+          description: Ranked staff options.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/StaffOption' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /staff/{staffId}/slots:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    get:
+      tags: [booking]
+      operationId: listFreeSlots
+      summary: Free slots of a staff member for one service and day
+      description: Slots come from working hours minus breaks (SRS Eq. 1), service duration and buffer, booked capacity and the service's appointment rule. Only bookable slots are returned.
+      x-srs: UC-3, UC-4, UC-19
+      x-mvp: true
+      x-rate-limit-group: default
+      parameters:
+        - name: serviceId
+          in: query
+          required: true
+          schema: { type: integer, format: int64 }
+        - { $ref: '#/components/parameters/Date' }
+      responses:
+        '200':
+          description: Free slots in start-time order.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Slot' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /appointments:
+    post:
+      tags: [booking]
+      operationId: bookAppointment
+      summary: Book an appointment
+      description: |
+        Checks the appointment rule, working hours and staff capacity under a lock in one transaction, creates
+        the appointment and sends a confirmation (UC-20). A failed notification does not undo the booking.
+      x-srs: UC-3, UC-20
+      x-mvp: true
+      x-rate-limit-group: booking
+      parameters:
+        - { $ref: '#/components/parameters/IdempotencyKey' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookingRequest' }
+            example: { serviceId: 1, staffId: 1, start: '2026-11-23T10:00:00+02:00' }
+      responses:
+        '201':
+          description: Appointment booked.
+          headers:
+            Location:
+              description: URL of the new appointment.
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/BookingConflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /appointments/{appointmentId}:
+    parameters:
+      - { $ref: '#/components/parameters/AppointmentId' }
+    get:
+      tags: [booking]
+      operationId: getAppointment
+      summary: One appointment (its customer, its staff member or the owner)
+      x-srs: UC-6, UC-8
+      x-mvp: true
+      x-rate-limit-group: default
+      responses:
+        '200':
+          description: Appointment.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /appointments/{appointmentId}/reschedule:
+    parameters:
+      - { $ref: '#/components/parameters/AppointmentId' }
+    post:
+      tags: [booking]
+      operationId: rescheduleAppointment
+      summary: Move an appointment to another slot
+      description: |
+        The new slot is taken before the old one is released, in one transaction; if the new slot is no longer
+        free the original appointment is kept (UC-4). Allowed until `cancelDeadlineHours` before the start.
+      x-srs: UC-4, UC-20
+      x-mvp: true
+      x-rate-limit-group: booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RescheduleRequest' }
+      responses:
+        '200':
+          description: Appointment moved.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/BookingConflict' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /appointments/{appointmentId}/cancel:
+    parameters:
+      - { $ref: '#/components/parameters/AppointmentId' }
+    post:
+      tags: [booking]
+      operationId: cancelAppointment
+      summary: Cancel an appointment
+      description: Customers may cancel until `cancelDeadlineHours` before the start; owners may cancel any booked appointment (UC-14). The customer is notified (UC-20).
+      x-srs: UC-5, UC-14, UC-20
+      x-mvp: true
+      x-rate-limit-group: booking
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string, maxLength: 500 }
+      responses:
+        '200':
+          description: Appointment cancelled.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/BookingConflict' }
+
+  /appointments/{appointmentId}/status:
+    parameters:
+      - { $ref: '#/components/parameters/AppointmentId' }
+    post:
+      tags: [booking]
+      operationId: changeAppointmentStatus
+      summary: Record check-in, service start, completion or no-show (staff)
+      description: |
+        Allowed transitions: BOOKED → CHECKED_IN → IN_SERVICE → COMPLETED, and BOOKED → NO_SHOW (SRS 2.5).
+        The server records the time of each change; completion updates the service's learned duration (Eq. 3).
+      x-srs: UC-8
+      x-mvp: true
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StatusChangeRequest' }
+      responses:
+        '200':
+          description: Status recorded.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /me/appointments:
+    get:
+      tags: [booking]
+      operationId: listMyAppointments
+      summary: The signed-in customer's appointments
+      x-srs: UC-6
+      x-mvp: true
+      x-rate-limit-group: default
+      parameters:
+        - name: scope
+          in: query
+          description: Upcoming are booked and not yet ended, nearest first; past are everything else, newest first.
+          schema:
+            type: string
+            enum: [UPCOMING, PAST]
+            default: UPCOMING
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Size' }
+      responses:
+        '200':
+          description: One page of appointments.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AppointmentPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /staff/{staffId}/agenda:
+    parameters:
+      - { $ref: '#/components/parameters/StaffId' }
+    get:
+      tags: [booking]
+      operationId: getStaffAgenda
+      summary: A staff member's appointments for one day, in time order
+      x-srs: UC-8
+      x-mvp: true
+      x-rate-limit-group: default
+      parameters:
+        - { $ref: '#/components/parameters/Date' }
+      responses:
+        '200':
+          description: Agenda.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Agenda' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /organizations/{organizationId}/appointments:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [booking]
+      operationId: listOrganizationAppointments
+      summary: Team schedule for a day or week (owner)
+      x-srs: UC-14
+      x-rate-limit-group: default
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          description: Inclusive; at most 7 days after `from`.
+          schema: { type: string, format: date }
+        - name: staffId
+          in: query
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: Appointments in time order.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Appointment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  # ---------------------------------------------------------------- feedback
+  /appointments/{appointmentId}/feedback:
+    parameters:
+      - { $ref: '#/components/parameters/AppointmentId' }
+    post:
+      tags: [feedback]
+      operationId: submitFeedback
+      summary: Rate a completed appointment (its customer, once)
+      x-srs: UC-7
+      x-rate-limit-group: default
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FeedbackRequest' }
+      responses:
+        '201':
+          description: Feedback saved.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Feedback' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /organizations/{organizationId}/feedback:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [feedback]
+      operationId: listFeedback
+      summary: Customer feedback for an organization (owner)
+      x-srs: UC-15
+      x-rate-limit-group: default
+      parameters:
+        - name: staffId
+          in: query
+          schema: { type: integer, format: int64 }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Size' }
+      responses:
+        '200':
+          description: One page of feedback, newest first.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedbackPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  # ---------------------------------------------------------------- analytics
+  /organizations/{organizationId}/analytics:
+    parameters:
+      - { $ref: '#/components/parameters/OrganizationId' }
+    get:
+      tags: [analytics]
+      operationId: getAnalytics
+      summary: Workload, waiting time, cancellation and no-show figures (owner)
+      description: Rates follow SRS 2.6 (cancellation rate = cancelled / booked, no-show rate = no-shows / non-cancelled bookings); occupancy follows Eq. 2.
+      x-srs: UC-15
+      x-rate-limit-group: default
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Figures for the period, total and per staff member.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Analytics' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-security:
-  - bearerAuth: []
+
+  parameters:
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    ServiceId:
+      name: serviceId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    StaffId:
+      name: staffId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    AppointmentId:
+      name: appointmentId
+      in: path
+      required: true
+      schema: { type: integer, format: int64 }
+    Date:
+      name: date
+      in: query
+      required: true
+      description: Day in the organization's time zone.
+      schema: { type: string, format: date, example: '2026-11-23' }
+    Page:
+      name: page
+      in: query
+      description: 0-based page number.
+      schema: { type: integer, minimum: 0, default: 0 }
+    Size:
+      name: size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Client-generated UUID; repeating a booking request with the same key returns the first result instead of booking twice.
+      schema: { type: string, format: uuid }
+
+  responses:
+    BadRequest:
+      description: The request is malformed or a field is invalid.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid credentials or token.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: The account's role or organization does not allow this.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: The resource does not exist or is not visible to this account.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: The request conflicts with the current state (duplicate, wrong status, already decided).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    BookingConflict:
+      description: A booking rule was not met; `code` says which one and the client returns to slot selection.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/BookingProblem' }
+          example:
+            type: about:blank
+            title: Slot no longer available
+            status: 409
+            detail: Another customer booked 10:00 with Maya Chen. Choose another time.
+            code: SLOT_TAKEN
+    TooManyRequests:
+      description: Rate limit exceeded (ADR-0008).
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema: { type: integer }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    # -------- errors and paging
+    Problem:
+      type: object
+      description: RFC 7807 problem details.
+      required: [title, status]
+      properties:
+        type: { type: string, format: uri-reference, default: about:blank }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+        errors:
+          type: array
+          description: Field errors for 400 responses.
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }
+    BookingProblem:
+      allOf:
+        - { $ref: '#/components/schemas/Problem' }
+        - type: object
+          required: [code]
+          properties:
+            code:
+              type: string
+              description: Which booking rule failed (SRS 2.5).
+              enum:
+                - SLOT_TAKEN
+                - OUTSIDE_WORKING_HOURS
+                - LEAD_TIME_NOT_MET
+                - TOO_FAR_IN_ADVANCE
+                - ACTIVE_LIMIT_REACHED
+                - CANCEL_DEADLINE_PASSED
+                - STAFF_DOES_NOT_PROVIDE_SERVICE
+                - INVALID_STATUS
+    ScheduleConflictProblem:
+      allOf:
+        - { $ref: '#/components/schemas/Problem' }
+        - type: object
+          required: [conflictingAppointments]
+          properties:
+            conflictingAppointments:
+              type: array
+              items: { $ref: '#/components/schemas/Appointment' }
+    PageInfo:
+      type: object
+      required: [page, size, totalElements, totalPages]
+      properties:
+        page: { type: integer }
+        size: { type: integer }
+        totalElements: { type: integer, format: int64 }
+        totalPages: { type: integer }
+
+    # -------- auth
+    Role:
+      type: string
+      enum: [SYSTEM_ADMIN, ORGANIZATION_OWNER, STAFF, CUSTOMER]
+    Account:
+      type: object
+      required: [userId, fullName, email, role]
+      properties:
+        userId: { type: integer, format: int64 }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: [string, 'null'] }
+        role: { $ref: '#/components/schemas/Role' }
+        organizationId:
+          type: [integer, 'null']
+          format: int64
+          description: Set for owners and staff.
+        staffId:
+          type: [integer, 'null']
+          format: int64
+          description: Set when the account acts as a staff member.
+    RegisterRequest:
+      type: object
+      required: [fullName, email, password]
+      properties:
+        fullName: { type: string, minLength: 1, maxLength: 200 }
+        email: { type: string, format: email, maxLength: 320 }
+        phone: { type: string, maxLength: 32 }
+        password: { type: string, minLength: 10, maxLength: 128, writeOnly: true }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, writeOnly: true }
+    AuthResponse:
+      type: object
+      required: [accessToken, tokenType, expiresInSeconds, account]
+      properties:
+        accessToken: { type: string }
+        tokenType: { type: string, const: Bearer }
+        expiresInSeconds: { type: integer }
+        account: { $ref: '#/components/schemas/Account' }
+    DeviceTokenRequest:
+      type: object
+      required: [fcmToken]
+      properties:
+        fcmToken: { type: string, maxLength: 500 }
+
+    # -------- organizations
+    Organization:
+      type: object
+      required: [organizationId, name, timezone, isActive]
+      properties:
+        organizationId: { type: integer, format: int64 }
+        name: { type: string }
+        address: { type: [string, 'null'] }
+        timezone: { type: string, example: Europe/Istanbul }
+        logoUrl: { type: [string, 'null'], format: uri }
+        terminology:
+          type: object
+          description: Words the organization uses instead of the defaults, for example `{"customer":"student","staff":"advisor"}`.
+          additionalProperties: { type: string }
+        ownerName: { type: [string, 'null'] }
+        isActive: { type: boolean }
+    OrganizationPage:
+      type: object
+      required: [content, page]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/Organization' }
+        page: { $ref: '#/components/schemas/PageInfo' }
+    CreateOrganizationRequest:
+      type: object
+      required: [name, timezone, owner]
+      properties:
+        name: { type: string, maxLength: 200 }
+        address: { type: string, maxLength: 500 }
+        timezone: { type: string }
+        owner:
+          type: object
+          required: [fullName, email]
+          properties:
+            fullName: { type: string, maxLength: 200 }
+            email: { type: string, format: email }
+    UpdateOrganizationRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, maxLength: 200 }
+        address: { type: string, maxLength: 500 }
+        timezone: { type: string }
+        logoUrl: { type: string, format: uri }
+        terminology:
+          type: object
+          additionalProperties: { type: string }
+        ownerUserId: { type: integer, format: int64 }
+        isActive: { type: boolean }
+
+    # -------- services
+    Service:
+      type: object
+      required: [serviceId, organizationId, name, expectedDurationMinutes, bufferMinutes, isActive]
+      properties:
+        serviceId: { type: integer, format: int64 }
+        organizationId: { type: integer, format: int64 }
+        name: { type: string }
+        description: { type: [string, 'null'] }
+        expectedDurationMinutes: { type: integer, minimum: 1 }
+        learnedDurationMinutes:
+          type: [number, 'null']
+          description: EWMA of recorded durations (SRS Eq. 3); null until the first completed appointment.
+        bufferMinutes: { type: integer, minimum: 0 }
+        isActive: { type: boolean }
+    ServiceRequest:
+      type: object
+      required: [name, expectedDurationMinutes]
+      properties:
+        name: { type: string, maxLength: 200 }
+        description: { type: string }
+        expectedDurationMinutes: { type: integer, minimum: 1, maximum: 480 }
+        bufferMinutes: { type: integer, minimum: 0, maximum: 120, default: 0 }
+    UpdateServiceRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, maxLength: 200 }
+        description: { type: string }
+        expectedDurationMinutes: { type: integer, minimum: 1, maximum: 480 }
+        bufferMinutes: { type: integer, minimum: 0, maximum: 120 }
+        isActive: { type: boolean }
+    AppointmentRule:
+      type: object
+      description: Every limit is optional; a missing limit does not apply (SRS 2.5).
+      properties:
+        maxAdvanceDays: { type: [integer, 'null'], minimum: 0 }
+        minLeadHours: { type: [integer, 'null'], minimum: 0 }
+        cancelDeadlineHours: { type: [integer, 'null'], minimum: 0 }
+        maxActivePerUser: { type: [integer, 'null'], minimum: 1 }
+
+    # -------- staff
+    StaffMember:
+      type: object
+      required: [staffId, userId, fullName, capacity, isActive, serviceIds]
+      properties:
+        staffId: { type: integer, format: int64 }
+        userId: { type: integer, format: int64 }
+        fullName: { type: string }
+        title: { type: [string, 'null'] }
+        capacity:
+          type: integer
+          minimum: 1
+          description: Appointments the staff member can serve at the same time.
+        isActive: { type: boolean }
+        serviceIds:
+          type: array
+          items: { type: integer, format: int64 }
+    CreateStaffRequest:
+      type: object
+      required: [fullName, email]
+      properties:
+        fullName: { type: string, maxLength: 200 }
+        email: { type: string, format: email }
+        title: { type: string, maxLength: 100 }
+        capacity: { type: integer, minimum: 1, default: 1 }
+    UpdateStaffRequest:
+      type: object
+      minProperties: 1
+      properties:
+        title: { type: string, maxLength: 100 }
+        capacity: { type: integer, minimum: 1 }
+        isActive: { type: boolean }
+
+    # -------- schedule
+    DayOfWeek:
+      type: integer
+      minimum: 1
+      maximum: 7
+      description: ISO day of week, 1 = Monday.
+    WorkingHours:
+      type: object
+      required: [dayOfWeek, startTime, endTime]
+      properties:
+        dayOfWeek: { $ref: '#/components/schemas/DayOfWeek' }
+        startTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '09:00' }
+        endTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '16:00' }
+        breakStart: { type: [string, 'null'], pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '12:00' }
+        breakEnd: { type: [string, 'null'], pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '13:00' }
+    ScheduleChangeStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+    ScheduleChangeRequestInput:
+      type: object
+      required: [dayOfWeek, newStartTime, newEndTime]
+      properties:
+        dayOfWeek: { $ref: '#/components/schemas/DayOfWeek' }
+        newStartTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        newEndTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+    ScheduleChangeRequest:
+      type: object
+      required: [requestId, staffId, staffName, dayOfWeek, newStartTime, newEndTime, requestedAt, status, conflictingAppointmentCount]
+      properties:
+        requestId: { type: integer, format: int64 }
+        staffId: { type: integer, format: int64 }
+        staffName: { type: string }
+        dayOfWeek: { $ref: '#/components/schemas/DayOfWeek' }
+        newStartTime: { type: string }
+        newEndTime: { type: string }
+        requestedAt: { type: string, format: date-time }
+        status: { $ref: '#/components/schemas/ScheduleChangeStatus' }
+        decidedAt: { type: [string, 'null'], format: date-time }
+        conflictingAppointmentCount: { type: integer, minimum: 0 }
+
+    # -------- booking
+    AppointmentStatus:
+      type: string
+      enum: [BOOKED, CHECKED_IN, IN_SERVICE, COMPLETED, CANCELLED, NO_SHOW]
+    StaffOption:
+      type: object
+      required: [staffId, fullName, rank, isRecommended, estimatedWaitMinutes, bookedSlots, totalSlots]
+      properties:
+        staffId: { type: integer, format: int64 }
+        fullName: { type: string }
+        title: { type: [string, 'null'] }
+        rank:
+          type: integer
+          minimum: 1
+          description: 1 = shortest estimated wait.
+        isRecommended: { type: boolean }
+        recommendationReason:
+          type: [string, 'null']
+          description: Plain sentence shown to the customer, e.g. "Shortest estimated wait".
+          example: Shortest estimated wait
+        nextFreeSlot: { type: [string, 'null'], format: date-time }
+        estimatedWaitMinutes:
+          type: integer
+          minimum: 0
+          description: SRS Eq. 4 for the next free slot.
+        bookedSlots: { type: integer, minimum: 0 }
+        totalSlots:
+          type: integer
+          minimum: 0
+          description: Slots in the day (SRS Eq. 1).
+        meanRating: { type: [number, 'null'], minimum: 1, maximum: 5 }
+    Slot:
+      type: object
+      required: [start, end, remainingCapacity, estimatedWaitMinutes]
+      properties:
+        start: { type: string, format: date-time }
+        end: { type: string, format: date-time }
+        remainingCapacity: { type: integer, minimum: 1 }
+        estimatedWaitMinutes: { type: integer, minimum: 0 }
+    BookingRequest:
+      type: object
+      required: [serviceId, staffId, start]
+      properties:
+        serviceId: { type: integer, format: int64 }
+        staffId: { type: integer, format: int64 }
+        start: { type: string, format: date-time }
+    RescheduleRequest:
+      type: object
+      required: [staffId, start]
+      properties:
+        staffId: { type: integer, format: int64 }
+        start: { type: string, format: date-time }
+    StatusChangeRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [CHECKED_IN, IN_SERVICE, COMPLETED, NO_SHOW]
+    Appointment:
+      type: object
+      required: [appointmentId, organizationId, service, staff, customer, start, end, status, bookedAt]
+      properties:
+        appointmentId: { type: integer, format: int64 }
+        organizationId: { type: integer, format: int64 }
+        service:
+          type: object
+          required: [serviceId, name]
+          properties:
+            serviceId: { type: integer, format: int64 }
+            name: { type: string }
+        staff:
+          type: object
+          required: [staffId, fullName]
+          properties:
+            staffId: { type: integer, format: int64 }
+            fullName: { type: string }
+        customer:
+          type: object
+          required: [userId, fullName]
+          properties:
+            userId: { type: integer, format: int64 }
+            fullName: { type: string }
+        start: { type: string, format: date-time }
+        end: { type: string, format: date-time }
+        status: { $ref: '#/components/schemas/AppointmentStatus' }
+        estimatedWaitMinutes:
+          type: [integer, 'null']
+          description: SRS Eq. 4; only for BOOKED and CHECKED_IN appointments.
+        bookedAt: { type: string, format: date-time }
+        cancelledAt: { type: [string, 'null'], format: date-time }
+        checkedInAt: { type: [string, 'null'], format: date-time }
+        serviceStartAt: { type: [string, 'null'], format: date-time }
+        serviceEndAt: { type: [string, 'null'], format: date-time }
+        canCancel:
+          type: boolean
+          description: True when the signed-in account may cancel or reschedule now (rules and deadline applied).
+        hasFeedback: { type: boolean }
+    AppointmentPage:
+      type: object
+      required: [content, page]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/Appointment' }
+        page: { $ref: '#/components/schemas/PageInfo' }
+    Agenda:
+      type: object
+      required: [date, staffId, appointments, workingHours]
+      properties:
+        date: { type: string, format: date }
+        staffId: { type: integer, format: int64 }
+        workingHours:
+          oneOf:
+            - { $ref: '#/components/schemas/WorkingHours' }
+            - type: 'null'
+        appointments:
+          type: array
+          items: { $ref: '#/components/schemas/Appointment' }
+
+    # -------- feedback
+    FeedbackRequest:
+      type: object
+      required: [rating]
+      properties:
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        comment: { type: string, maxLength: 1000 }
+    Feedback:
+      type: object
+      required: [feedbackId, appointmentId, rating, createdAt]
+      properties:
+        feedbackId: { type: integer, format: int64 }
+        appointmentId: { type: integer, format: int64 }
+        staffName: { type: string }
+        serviceName: { type: string }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        comment: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+    FeedbackPage:
+      type: object
+      required: [content, page]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/Feedback' }
+        page: { $ref: '#/components/schemas/PageInfo' }
+
+    # -------- analytics
+    AnalyticsFigures:
+      type: object
+      required: [booked, completed, cancelled, noShows, cancellationRate, noShowRate]
+      properties:
+        booked: { type: integer }
+        completed: { type: integer }
+        cancelled: { type: integer }
+        noShows: { type: integer }
+        cancellationRate: { type: number, minimum: 0, maximum: 1 }
+        noShowRate: { type: number, minimum: 0, maximum: 1 }
+        meanWaitMinutes: { type: [number, 'null'] }
+        occupancy:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 1
+          description: SRS Eq. 2.
+        meanRating: { type: [number, 'null'] }
+    Analytics:
+      type: object
+      required: [from, to, total, byStaff]
+      properties:
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        total: { $ref: '#/components/schemas/AnalyticsFigures' }
+        byStaff:
+          type: array
+          items:
+            allOf:
+              - { $ref: '#/components/schemas/AnalyticsFigures' }
+              - type: object
+                required: [staffId, fullName]
+                properties:
+                  staffId: { type: integer, format: int64 }
+                  fullName: { type: string }

@@ -21,6 +21,12 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · api
+
+- **Done:** Wrote the full contract in `api/openapi.yaml`: 35 operations covering UC-1 to UC-20 (auth, organizations, services and rules, staff, working hours and change requests, recommendations, slots, appointments with book / reschedule / cancel / status, agenda, feedback, analytics), RFC 7807 errors with booking error codes, pagination, idempotency key for booking, and `x-srs`, `x-mvp`, `x-rate-limit-group` on every operation. Added Redocly lint (`make api-lint`, CI) and Swagger UI in the backend serving the contract next to the generated description (ADR-0014). The backend image now builds from the repository root.
+- **State / next:** Contract lint passes; `./mvnw verify` passes (27 tests). Swagger UI in the running backend and the new Docker build were not run locally (no Docker); `BackendApplicationIT` checks Swagger in CI. Web types are still hand-written for the prototype; generate them from the contract next.
+- **Refs:** ADR-0014, CONTRIBUTING section 6
+
 ### 2026-11-22 · selman · web
 
 - **Done:** Web skeleton: Vite 8, React 19, TypeScript 6, Mantine 9 as the only UI library with one theme (ADR-0013), shared layout components (AppFrame, Page, Section, Panel, Columns) with fixed spacing (UI_GUIDELINES section 5), React Router, TanStack Query, Vitest. ESLint boundaries rule migrated to the plugin's v7 syntax and verified to block cross-feature imports. Web Dockerfile (nginx) and compose service added.

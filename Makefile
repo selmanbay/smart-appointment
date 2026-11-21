@@ -4,7 +4,7 @@
 .DEFAULT_GOAL := help
 HAS_WEB := $(wildcard web/package.json)
 
-.PHONY: help setup up down logs lint format test verify backend-lint backend-format backend-test backend-verify web-lint web-format web-test repo-lint
+.PHONY: help setup up down logs lint format test verify api-lint backend-lint backend-format backend-test backend-verify web-lint web-format web-test repo-lint
 
 help: ## Show this list
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-16s %s\n", $$1, $$2}'
@@ -29,9 +29,12 @@ test: backend-test web-test ## Fast tests (no Docker needed)
 
 verify: lint backend-verify web-test ## Everything CI runs, except Docker image and security scans
 
-repo-lint: ## English-only check and Markdown lint
+repo-lint: api-lint ## English-only check, Markdown lint and API contract lint
 	./scripts/check-english.sh
 	npx --yes markdownlint-cli2@0.24.2 "**/*.md"
+
+api-lint: ## Lint api/openapi.yaml (Redocly)
+	npx --yes @redocly/cli@2.82.0 lint api/openapi.yaml
 
 backend-lint: ## Spotless check and Checkstyle
 	cd backend && ./mvnw -B -q spotless:check checkstyle:check

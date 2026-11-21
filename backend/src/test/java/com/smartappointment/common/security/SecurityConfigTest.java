@@ -28,6 +28,11 @@ class SecurityConfigTest {
   }
 
   @Test
+  void servesTheApiContractWithoutSignIn(@Autowired MockMvc mockMvc) throws Exception {
+    mockMvc.perform(get("/openapi.yaml")).andExpect(status().isOk());
+  }
+
+  @Test
   void allowsCorsPreflightFromTheWebApp(@Autowired MockMvc mockMvc) throws Exception {
     mockMvc
         .perform(

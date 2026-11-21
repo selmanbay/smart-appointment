@@ -1,0 +1,10 @@
+# Build context is the repository root for the backend image; keep it small.
+.git
+**/node_modules
+**/target
+**/dist
+web
+android
+docs
+*.md
+!api/**

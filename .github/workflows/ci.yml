@@ -66,6 +66,8 @@ jobs:
         uses: hadolint/hadolint-action@v3.5.0
         with:
           recursive: true
+      - name: API contract lint (Redocly)
+        run: npx --yes @redocly/cli@2.82.0 lint api/openapi.yaml
       - name: Markdown lint
         uses: DavidAnson/markdownlint-cli2-action@v25
         with:
@@ -124,7 +126,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Build the Docker image
-        run: docker build --tag smart-appointment-backend:ci backend
+        run: docker build --file backend/Dockerfile --tag smart-appointment-backend:ci .
 
   web:
     needs: changes

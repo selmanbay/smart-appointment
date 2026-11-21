@@ -1,17 +1,22 @@
 package com.smartappointment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-/** Starts the whole application against PostgreSQL and checks that Flyway created the schema. */
+/** Starts the whole application against PostgreSQL: schema migration and API documentation. */
 @SpringBootTest
+@AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 @Testcontainers(disabledWithoutDocker = true)
 class BackendApplicationIT {
@@ -38,5 +43,12 @@ class BackendApplicationIT {
             String.class);
 
     assertThat(tableNames).containsAll(SRS_TABLES);
+  }
+
+  @Test
+  void servesSwaggerUiAndBothApiDescriptions(@Autowired MockMvc mockMvc) throws Exception {
+    mockMvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk());
+    mockMvc.perform(get("/openapi.yaml")).andExpect(status().isOk());
+    mockMvc.perform(get("/v3/api-docs")).andExpect(status().isOk());
   }
 }

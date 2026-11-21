@@ -16,10 +16,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Stateless API security. JWT authentication is added by the auth feature (F1); until then every
- * endpoint except health and /api/v1/auth/** answers 401.
+ * endpoint except health, /api/v1/auth/** and the API documentation answers 401.
  */
 @Configuration
 public class SecurityConfig {
+
+  // Health, sign-in and the API documentation (Swagger UI is off in prod, ADR-0014).
+  private static final String[] PUBLIC_PATHS = {
+    "/actuator/health/**",
+    "/api/v1/auth/**",
+    "/openapi.yaml",
+    "/swagger-ui.html",
+    "/swagger-ui/**",
+    "/v3/api-docs/**"
+  };
 
   private static final List<String> ALLOWED_METHODS =
       List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
@@ -35,11 +45,7 @@ public class SecurityConfig {
         .exceptionHandling(errors ->
             errors.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .authorizeHttpRequests(requests ->
-            requests
-                .requestMatchers("/actuator/health/**", "/api/v1/auth/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated());
+            requests.requestMatchers(PUBLIC_PATHS).permitAll().anyRequest().authenticated());
     return http.build();
   }
 
