@@ -13,11 +13,17 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      web: ${{ steps.filter.outputs.web }}
-      android: ${{ steps.filter.outputs.android }}
+      backend: ${{ steps.filter.outputs.backend == 'true' && steps.exists.outputs.backend == 'true' }}
+      web: ${{ steps.filter.outputs.web == 'true' && steps.exists.outputs.web == 'true' }}
+      android: ${{ steps.filter.outputs.android == 'true' && steps.exists.outputs.android == 'true' }}
     steps:
       - uses: actions/checkout@v4
+      # An app is built only once its build file exists.
+      - id: exists
+        run: |
+          echo "backend=$([ -f backend/pom.xml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "web=$([ -f web/package-lock.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "android=$([ -f android/gradlew ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -34,8 +40,7 @@ jobs:
 
   backend:
     needs: changes
-    # Skipped until backend code (pom.xml) exists.
-    if: needs.changes.outputs.backend == 'true' && hashFiles('backend/pom.xml') != ''
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -51,7 +56,7 @@ jobs:
 
   web:
     needs: changes
-    if: needs.changes.outputs.web == 'true' && hashFiles('web/package-lock.json') != ''
+    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -69,7 +74,7 @@ jobs:
 
   android:
     needs: changes
-    if: needs.changes.outputs.android == 'true' && hashFiles('android/gradlew') != ''
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
