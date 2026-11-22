@@ -21,6 +21,11 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · docs
+
+- **Done:** SDD sources in `docs/sdd/`: `WORK_HISTORY.md` (every work item with person, date, description, traceability and commit, from git and the feature logs; hours left for the team) and `DESIGN_FLOWS.md` (class diagram, three activity diagrams, sequence diagrams for UC-3, UC-4, UC-8 and UC-2, DFD level 0, component and deployment diagram, each with rationale). All ten Mermaid diagrams render with Mermaid 11.
+- **State / next:** Booking-side classes are marked «planned»; update the diagrams when B4–B12 land.
+
 ### 2026-11-22 · selman · backend
 
 - **Done:** Shared security pieces for B3: `JwtProperties`, `JwtConfig` (encoder, decoder with issuer check, role-to-authority mapping, password encoder), `AccessCookieAuthenticationFilter`, `CsrfCookieFilter`, `CorsConfig` (credentials allowed for listed origins), `ProblemResponses` (RFC 7807 for 401, 403 and 429; the rate-limit filter now uses it), an injectable `Clock`. Tests always run with `application-test.yml`.

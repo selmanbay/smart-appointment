@@ -35,7 +35,7 @@ MVP scope: ADR-0012 (UC-3 book, UC-4 reschedule / UC-5 cancel, UC-8 service stat
 |---|---|---|
 | Yusuf | Backend MVP tasks in order. B1 (entities, repositories) is merged; B2 (demo data) and B3 (JWT sign-in) are done by Selman; next B4 catalog reads, estimation, slots, recommendation, booking with lock, reschedule / cancel, status, agenda, e-mail | [`handoff/2026-11-22-backend-mvp.md`](handoff/2026-11-22-backend-mvp.md) |
 | Selman | Web: generate API types from the contract, switch screens to the API as endpoints land, cancel confirmation and reschedule flow | `web/` |
-| Selman | SDD diagrams (class, 3 activity, 3 sequence, DFD level 0, component + deployment) | `docs/sdd/` |
+| Selman | SDD: diagram sources and work history drafted in `docs/sdd/`; fill in hours and export the diagrams | `docs/sdd/` |
 | Team | Work split in CONTRIBUTING section 1 and CODEOWNERS; Barış Alkan and Zanyar Erkozan open `develop/<name>` | |
 
 ## Blockers

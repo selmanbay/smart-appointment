@@ -80,6 +80,7 @@ smart-appointment/
 │   ├── features/<feature>.md        scope, status, open questions, log per feature
 │   ├── decisions/NNNN-*.md          architecture decision records
 │   ├── handoff/                     cold-start handoffs between people (start here when you take over work)
+│   ├── sdd/                         SDD sources: WORK_HISTORY.md (who did what, from git), DESIGN_FLOWS.md (Mermaid diagrams)
 │   ├── srs/                         SRS PDF (source of requirements)
 │   ├── design/UI_GUIDELINES.md      tokens, components, spacing and copy rules for every screen
 │   └── design/                      UI screenshots and static HTML prototype (reference only)
