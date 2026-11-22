@@ -1,0 +1,5 @@
+# Tests run with the `test` profile (pom.xml): fixed JWT settings, no demo data.
+app:
+  jwt:
+    secret: test-secret-for-automated-tests-only-0123456789
+    is-cookie-secure: false

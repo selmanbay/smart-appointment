@@ -23,6 +23,12 @@ In progress
 
 ### 2026-11-22 · selman · backend
 
+- **Done:** Shared security pieces for B3: `JwtProperties`, `JwtConfig` (encoder, decoder with issuer check, role-to-authority mapping, password encoder), `AccessCookieAuthenticationFilter`, `CsrfCookieFilter`, `CorsConfig` (credentials allowed for listed origins), `ProblemResponses` (RFC 7807 for 401, 403 and 429; the rate-limit filter now uses it), an injectable `Clock`. Tests always run with `application-test.yml`.
+- **Why:** Checkstyle's fan-out limit rejected the first versions of `AuthController`, `AuthService` and `SecurityConfig`; they were split (`AccountController`, `AccountService`, `CorsConfig`) instead of relaxing the rule.
+- **Refs:** ADR-0007, ADR-0015
+
+### 2026-11-22 · selman · backend
+
 - **Done:** B2 demo data as a repeatable Flyway migration `db/seed/R__demo_data.sql`, loaded only by the `local` profile: one organization, owner, admin, two staff, five customers, two services with rules, Mon–Fri working hours, two weeks of completed appointments with recorded service times, no-shows, cancellations and ratings, and the next working week of bookings. Tests now always run with the `test` profile (surefire and failsafe) so the demo data never reaches them; `DemoDataIT` loads it on purpose. Added `make db-reset`.
 - **Why:** A repeatable migration with a guard avoids clashing with the next schema version (`V2`), which the handoff's `V2__demo_data.sql` would have done.
 - **State / next:** SQL and PL/pgSQL syntax checked with the PostgreSQL parser (libpg_query); `./mvnw verify` passes locally but `DemoDataIT` was skipped (no Docker). It runs in CI on the PR. Demo password is fake and documented in `backend/README.md`.

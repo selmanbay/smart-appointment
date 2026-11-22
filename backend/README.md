@@ -81,6 +81,13 @@ backend/
 
 Never edit a merged migration; add `V2__...`.
 
+### Sign-in (ADR-0015)
+
+- `POST /api/v1/auth/login` with `{"email","password"}` returns the account and a token, and sets the HttpOnly `sa_access` cookie for browsers.
+- Browsers send the cookie automatically; state-changing requests must echo the `XSRF-TOKEN` cookie in the `X-XSRF-TOKEN` header. Mobile clients send `Authorization: Bearer <token>` instead.
+- `GET /api/v1/me` returns the signed-in account; `POST /api/v1/auth/logout` clears the cookie.
+- Settings: `JWT_SECRET` (required, at least 32 bytes), `JWT_LIFETIME` (default `8h`), `JWT_COOKIE_SECURE` (default `true`, `false` in the local profile).
+
 ### Demo data (local profile only)
 
 `src/main/resources/db/seed/R__demo_data.sql` is loaded only by the `local` profile (docker compose). Tests run with the `test` profile and never see it; `DemoDataIT` loads it on purpose and checks it.
