@@ -18,4 +18,9 @@ public class StaffLookupService {
   public Optional<Long> findStaffIdByUserId(Long userId) {
     return staffRepository.findByUserId(userId).map(Staff::getStaffId);
   }
+
+  @Transactional(readOnly = true)
+  public boolean existsById(Long staffId) {
+    return staffRepository.existsById(staffId);
+  }
 }

@@ -183,7 +183,8 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
 - [x] B1 Entities and repositories (merged in PR #7)
 - [x] B2 Seed data (Selman, `db/seed/R__demo_data.sql`; `DemoDataIT` runs in CI; verified locally with Docker by Yusuf on 2026-11-22, see `docs/features/platform.md`)
 - [x] B3 JWT sign-in (Selman; ADR-0015, `AuthFlowIT` runs in CI; verified locally with Docker by Yusuf on 2026-11-22, see `docs/features/platform.md`)
-- [ ] B4 Catalog reads
+- [x] B4 Catalog reads (Yusuf; ADR-0016, `CatalogControllerTest`, `OrganizationControllerTest`,
+  `ScheduleControllerTest` run in CI)
 - [ ] B5 Estimation (Eq. 3, Eq. 4)
 - [ ] B6 Free slots (Eq. 1 + rules)
 - [ ] B7 Staff recommendation

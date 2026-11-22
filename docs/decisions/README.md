@@ -51,3 +51,4 @@ What we gain and lose, and what to watch out for from now on.
 | [0013](0013-mantine-ui-library.md) | Mantine as the only UI library | Accepted |
 | [0014](0014-swagger-from-contract.md) | Swagger UI serves the contract and the implementation | Accepted |
 | [0015](0015-stateless-jwt-cookie-and-bearer.md) | Stateless JWT in an HttpOnly cookie (web) or a bearer header (Android) | Proposed |
+| [0016](0016-catalog-service-entity-name.md) | Keep the catalog `Service` entity name; qualify Spring's `@Service` annotation instead | Proposed |

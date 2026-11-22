@@ -4,6 +4,7 @@ import com.smartappointment.common.config.JwtProperties;
 import com.smartappointment.common.web.ProblemResponses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +33,14 @@ public class SecurityConfig {
     "/v3/api-docs/**"
   };
 
+  // GET-only: the contract marks these security: [] (getOrganization, listServices,
+  // getAppointmentRule). Other methods on the same paths (update, create, set) stay authenticated.
+  private static final String[] PUBLIC_GET_PATHS = {
+    "/api/v1/organizations/{organizationId}",
+    "/api/v1/organizations/{organizationId}/services",
+    "/api/v1/services/{serviceId}/rule"
+  };
+
   @Bean
   SecurityFilterChain apiSecurity(
       HttpSecurity http,
@@ -57,7 +66,13 @@ public class SecurityConfig {
         .exceptionHandling(errors ->
             errors.authenticationEntryPoint(unauthorized()).accessDeniedHandler(forbidden()))
         .authorizeHttpRequests(requests ->
-            requests.requestMatchers(PUBLIC_PATHS).permitAll().anyRequest().authenticated());
+            requests
+                .requestMatchers(PUBLIC_PATHS)
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_GET_PATHS)
+                .permitAll()
+                .anyRequest()
+                .authenticated());
     return http.build();
   }
 
