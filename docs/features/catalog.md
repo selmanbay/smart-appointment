@@ -12,13 +12,23 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
 - None
 
 ## Log
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Added `Staff` and `Service` entities with their repositories. The staff-provides-
+  service relationship is mapped as a `@ManyToMany` over `staff_service`; no extra entity was
+  needed since the join table has no columns of its own.
+- **Why:** B1 (entities and repositories) from the backend MVP handoff.
+- **State / next:** No catalog reads endpoint yet (B4). Verified with `CatalogRepositoryTest`
+  (`@DataJpaTest`, Testcontainers) and `make backend-verify`.
+- **Refs:** SRS Table 9, ADR-0001
 
 ### 2026-11-22 · selman · docs
 

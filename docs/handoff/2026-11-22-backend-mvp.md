@@ -154,7 +154,7 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
 
 ## 6. Checklist
 
-- [ ] B1 Entities and repositories
+- [x] B1 Entities and repositories (merged in PR #7)
 - [ ] B2 Seed data
 - [ ] B3 JWT sign-in
 - [ ] B4 Catalog reads
