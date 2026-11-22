@@ -3,6 +3,7 @@ package com.smartappointment.auth;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.smartappointment.TestTokens;
 import com.smartappointment.auth.dto.AccountResponse;
 import java.time.Clock;
 import java.time.Duration;

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.smartappointment.TestTokens;
 import com.smartappointment.auth.dto.AccountResponse;
 import com.smartappointment.auth.dto.AuthResponse;
 import com.smartappointment.common.config.CorsProperties;

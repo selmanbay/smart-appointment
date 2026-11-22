@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.smartappointment.TestTokens;
 import com.smartappointment.auth.dto.AuthResponse;
 import com.smartappointment.auth.dto.LoginRequest;
 import com.smartappointment.catalog.StaffLookupService;
