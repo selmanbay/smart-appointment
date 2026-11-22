@@ -21,6 +21,13 @@ In progress
 
 ## Log
 
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Verified B2 (demo data) and B3 (JWT sign-in) on a machine with Docker, on `feature/verify-b2-b3` branched from `develop/selman`. `make lint` passed. `make backend-verify` passed: 58 unit/slice/ArchUnit tests + 7 integration tests (`AuthFlowIT`, `BackendApplicationIT`, `DemoDataIT`, all `*RepositoryTest`), 0 failures, 0 skipped. `make up` started the stack; Swagger UI loaded at `/swagger-ui/index.html`; `POST /api/v1/auth/login` for `alex.morgan@example.com` returned 200 with a `sa_access` cookie; `GET /api/v1/me` with that cookie returned Alex Morgan; the database held 1 organization, 9 users, 117 appointments.
+- **Why:** Selman had no Docker on his machine, so `DemoDataIT`, `AuthFlowIT`, `BackendApplicationIT` and the Docker stack were previously only checked in CI, not locally.
+- **State / next:** Nothing needed fixing; both B2 and B3 are confirmed working end to end. Merged (fast-forward) into `develop/yusuf`.
+- **Refs:** handoff `docs/handoff/2026-11-22-backend-mvp.md`, ADR-0012, ADR-0015
+
 ### 2026-11-22 · selman · docs
 
 - **Done:** SDD sources in `docs/sdd/`: `WORK_HISTORY.md` (every work item with person, date, description, traceability and commit, from git and the feature logs; hours left for the team) and `DESIGN_FLOWS.md` (class diagram, three activity diagrams, sequence diagrams for UC-3, UC-4, UC-8 and UC-2, DFD level 0, component and deployment diagram, each with rationale). All ten Mermaid diagrams render with Mermaid 11.
