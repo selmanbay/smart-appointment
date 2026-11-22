@@ -20,6 +20,11 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · backend
+
+- **Done:** Demo data (B2) gives the booking flow two staff members with history, so slots, waiting estimates and the agenda have realistic input once B5–B11 exist.
+- **Refs:** `backend/src/main/resources/db/seed/R__demo_data.sql`
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Added the `Appointment` entity and `AppointmentStatus` enum (allowed transitions per

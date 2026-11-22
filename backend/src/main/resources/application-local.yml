@@ -1,4 +1,9 @@
-# docker compose and local runs: Mailpit SMTP, rate limiting off, verbose app logs.
+# docker compose and local runs: Mailpit SMTP, rate limiting off, verbose app logs, demo data.
+spring:
+  flyway:
+    # Demo data for the MVP (handoff B2); never loaded outside the local profile.
+    locations: classpath:db/migration,classpath:db/seed
+
 logging:
   level:
     com.smartappointment: DEBUG

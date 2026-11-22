@@ -21,6 +21,13 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · backend
+
+- **Done:** B2 demo data as a repeatable Flyway migration `db/seed/R__demo_data.sql`, loaded only by the `local` profile: one organization, owner, admin, two staff, five customers, two services with rules, Mon–Fri working hours, two weeks of completed appointments with recorded service times, no-shows, cancellations and ratings, and the next working week of bookings. Tests now always run with the `test` profile (surefire and failsafe) so the demo data never reaches them; `DemoDataIT` loads it on purpose. Added `make db-reset`.
+- **Why:** A repeatable migration with a guard avoids clashing with the next schema version (`V2`), which the handoff's `V2__demo_data.sql` would have done.
+- **State / next:** SQL and PL/pgSQL syntax checked with the PostgreSQL parser (libpg_query); `./mvnw verify` passes locally but `DemoDataIT` was skipped (no Docker). It runs in CI on the PR. Demo password is fake and documented in `backend/README.md`.
+- **Refs:** handoff B2, ADR-0012
+
 ### 2026-11-22 · selman · api
 
 - **Done:** Wrote the full contract in `api/openapi.yaml`: 35 operations covering UC-1 to UC-20 (auth, organizations, services and rules, staff, working hours and change requests, recommendations, slots, appointments with book / reschedule / cancel / status, agenda, feedback, analytics), RFC 7807 errors with booking error codes, pagination, idempotency key for booking, and `x-srs`, `x-mvp`, `x-rate-limit-group` on every operation. Added Redocly lint (`make api-lint`, CI) and Swagger UI in the backend serving the contract next to the generated description (ADR-0014). The backend image now builds from the repository root.

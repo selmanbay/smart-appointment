@@ -155,7 +155,7 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
 ## 6. Checklist
 
 - [x] B1 Entities and repositories (merged in PR #7)
-- [ ] B2 Seed data
+- [x] B2 Seed data (Selman, `db/seed/R__demo_data.sql`; `DemoDataIT` runs in CI)
 - [ ] B3 JWT sign-in
 - [ ] B4 Catalog reads
 - [ ] B5 Estimation (Eq. 3, Eq. 4)
