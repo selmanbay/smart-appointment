@@ -185,7 +185,7 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
 - [x] B3 JWT sign-in (Selman; ADR-0015, `AuthFlowIT` runs in CI; verified locally with Docker by Yusuf on 2026-11-22, see `docs/features/platform.md`)
 - [x] B4 Catalog reads (Yusuf; ADR-0016, `CatalogControllerTest`, `OrganizationControllerTest`,
   `ScheduleControllerTest` run in CI)
-- [ ] B5 Estimation (Eq. 3, Eq. 4)
+- [x] B5 Estimation (Yusuf; ADR-0017, `LearnedDurationTest`, `WaitingTimeEstimatorTest`)
 - [ ] B6 Free slots (Eq. 1 + rules)
 - [ ] B7 Staff recommendation
 - [ ] B8 Booking with capacity lock + concurrency test
