@@ -12,13 +12,23 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
 - [ ] How many hours before the appointment is the reminder sent? (the SRS gives no number)
 
 ## Log
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Added the `Notification` entity, the `NotificationChannel`, `NotificationType` and
+  `NotificationStatus` enums, and `NotificationRepository`, mapped field-for-field to the V1
+  schema.
+- **Why:** B1 (entities and repositories) from the backend MVP handoff.
+- **State / next:** No `NotificationSender` yet (B12). Verified with
+  `NotificationRepositoryTest` (`@DataJpaTest`, Testcontainers) and `make backend-verify`.
+- **Refs:** SRS Table 9, ADR-0001
 
 ### 2026-11-21 · selman · backend
 

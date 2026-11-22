@@ -12,7 +12,7 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
@@ -20,6 +20,16 @@ Not started
 - [ ] Are Staff and Owner accounts created by sign-up or by invitation?
 
 ## Log
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Added the `AppUser` entity, `UserRole` enum and `AppUserRepository` (with
+  `findByEmail`), mapped field-for-field to the V1 schema.
+- **Why:** B1 (entities and repositories) from the backend MVP handoff.
+- **State / next:** Sign-in and the JWT filter (B3) are not started; the
+  `ck_app_user_org_required` constraint is enforced by the database, not yet by a service.
+  Verified with `AppUserRepositoryTest` (`@DataJpaTest`, Testcontainers) and `make backend-verify`.
+- **Refs:** SRS Table 9, ADR-0001
 
 ### 2026-11-22 · selman · web
 

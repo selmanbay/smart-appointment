@@ -6,22 +6,26 @@ Last updated: 2026-11-22
 
 ## Summary
 
-Team rules, folder structure and the backend skeleton are ready. `./mvnw verify` passes (26 tests); feature code has not started. Goal: an MVP that runs locally (backend + React + PostgreSQL via `docker compose up`), see ADR-0005.
+Team rules, folder structure and the backend skeleton are ready. Entities and repositories for
+all eleven SRS tables are in place (B1 of the backend MVP handoff); `make backend-verify` passes
+(37 tests) and the app starts against PostgreSQL with `ddl-auto: validate`. No business logic,
+endpoints or seed data yet. Goal: an MVP that runs locally (backend + React + PostgreSQL via
+`docker compose up`), see ADR-0005.
 
 ## Features
 
 | Feature | SRS | Status | Note |
 |---|---|---|---|
 | [Platform and infrastructure](features/platform.md) | — | In progress | Repo rules, CI pipeline, lint, backend skeleton done |
-| [Authentication and roles](features/auth.md) | F1 | Not started | |
-| [Organization management](features/organization.md) | F2 (+ UC-13 branding) | Not started | |
-| [Services and staff](features/catalog.md) | F3 | Not started | |
-| [Working hours, capacity and rules](features/schedule.md) | F4 | Not started | |
-| [Booking: slots, booking, cancel, reschedule, status](features/booking.md) | F5, F6, F8 | In progress | Web prototype on mock data; no backend yet |
+| [Authentication and roles](features/auth.md) | F1 | In progress | Entity and repository only; sign-in not started |
+| [Organization management](features/organization.md) | F2 (+ UC-13 branding) | In progress | Entity and repository only |
+| [Services and staff](features/catalog.md) | F3 | In progress | Entity and repository only |
+| [Working hours, capacity and rules](features/schedule.md) | F4 | In progress | Entity and repository only |
+| [Booking: slots, booking, cancel, reschedule, status](features/booking.md) | F5, F6, F8 | In progress | Web prototype on mock data; `Appointment` entity and repository only |
 | [Waiting time and staff recommendation](features/estimation.md) | F9 | Not started | |
-| [Notifications and reminders](features/notification.md) | F7 | Not started | |
+| [Notifications and reminders](features/notification.md) | F7 | In progress | Entity and repository only |
 | [Workload and analytics](features/analytics.md) | F10 | Not started | |
-| [Feedback](features/feedback.md) | F11 | Not started | |
+| [Feedback](features/feedback.md) | F11 | In progress | Entity and repository only |
 
 ## Next
 
