@@ -21,6 +21,24 @@ In progress
 
 ## Log
 
+### 2026-11-22 · selman · docs
+
+- **Done:** SDD sources in `docs/sdd/`: `WORK_HISTORY.md` (every work item with person, date, description, traceability and commit, from git and the feature logs; hours left for the team) and `DESIGN_FLOWS.md` (class diagram, three activity diagrams, sequence diagrams for UC-3, UC-4, UC-8 and UC-2, DFD level 0, component and deployment diagram, each with rationale). All ten Mermaid diagrams render with Mermaid 11.
+- **State / next:** Booking-side classes are marked «planned»; update the diagrams when B4–B12 land.
+
+### 2026-11-22 · selman · backend
+
+- **Done:** Shared security pieces for B3: `JwtProperties`, `JwtConfig` (encoder, decoder with issuer check, role-to-authority mapping, password encoder), `AccessCookieAuthenticationFilter`, `CsrfCookieFilter`, `CorsConfig` (credentials allowed for listed origins), `ProblemResponses` (RFC 7807 for 401, 403 and 429; the rate-limit filter now uses it), an injectable `Clock`. Tests always run with `application-test.yml`.
+- **Why:** Checkstyle's fan-out limit rejected the first versions of `AuthController`, `AuthService` and `SecurityConfig`; they were split (`AccountController`, `AccountService`, `CorsConfig`) instead of relaxing the rule.
+- **Refs:** ADR-0007, ADR-0015
+
+### 2026-11-22 · selman · backend
+
+- **Done:** B2 demo data as a repeatable Flyway migration `db/seed/R__demo_data.sql`, loaded only by the `local` profile: one organization, owner, admin, two staff, five customers, two services with rules, Mon–Fri working hours, two weeks of completed appointments with recorded service times, no-shows, cancellations and ratings, and the next working week of bookings. Tests now always run with the `test` profile (surefire and failsafe) so the demo data never reaches them; `DemoDataIT` loads it on purpose. Added `make db-reset`.
+- **Why:** A repeatable migration with a guard avoids clashing with the next schema version (`V2`), which the handoff's `V2__demo_data.sql` would have done.
+- **State / next:** SQL and PL/pgSQL syntax checked with the PostgreSQL parser (libpg_query); `./mvnw verify` passes locally but `DemoDataIT` was skipped (no Docker). It runs in CI on the PR. Demo password is fake and documented in `backend/README.md`.
+- **Refs:** handoff B2, ADR-0012
+
 ### 2026-11-22 · selman · api
 
 - **Done:** Wrote the full contract in `api/openapi.yaml`: 35 operations covering UC-1 to UC-20 (auth, organizations, services and rules, staff, working hours and change requests, recommendations, slots, appointments with book / reschedule / cancel / status, agenda, feedback, analytics), RFC 7807 errors with booking error codes, pagination, idempotency key for booking, and `x-srs`, `x-mvp`, `x-rate-limit-group` on every operation. Added Redocly lint (`make api-lint`, CI) and Swagger UI in the backend serving the contract next to the generated description (ADR-0014). The backend image now builds from the repository root.

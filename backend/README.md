@@ -80,3 +80,23 @@ backend/
 - Rules that need data from several rows (capacity under concurrency, appointments inside working hours, one active booking limit) are enforced in the services, not in SQL.
 
 Never edit a merged migration; add `V2__...`.
+
+### Sign-in (ADR-0015)
+
+- `POST /api/v1/auth/login` with `{"email","password"}` returns the account and a token, and sets the HttpOnly `sa_access` cookie for browsers.
+- Browsers send the cookie automatically; state-changing requests must echo the `XSRF-TOKEN` cookie in the `X-XSRF-TOKEN` header. Mobile clients send `Authorization: Bearer <token>` instead.
+- `GET /api/v1/me` returns the signed-in account; `POST /api/v1/auth/logout` clears the cookie.
+- Settings: `JWT_SECRET` (required, at least 32 bytes), `JWT_LIFETIME` (default `8h`), `JWT_COOKIE_SECURE` (default `true`, `false` in the local profile).
+
+### Demo data (local profile only)
+
+`src/main/resources/db/seed/R__demo_data.sql` is loaded only by the `local` profile (docker compose). Tests run with the `test` profile and never see it; `DemoDataIT` loads it on purpose and checks it.
+
+| Role | E-mail |
+|---|---|
+| System admin | `admin@example.com` |
+| Organization owner | `hannah.reid@example.com` |
+| Staff | `maya.chen@example.com`, `daniel.brooks@example.com` |
+| Customer | `alex.morgan@example.com` (and four more customers) |
+
+All demo accounts use the fake password `demo-password-2026` (local only). Appointments are generated relative to the day the database is created: two weeks of completed history with recorded service times and the next working week of bookings. For a fresh demo day run `make db-reset` and then `make up`.

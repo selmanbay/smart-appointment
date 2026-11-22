@@ -1,6 +1,6 @@
 # Handoff: backend MVP
 
-- **From:** Selman · **To:** Yusuf · **Date:** 2026-11-22
+- **From:** Selman · **To:** Yusuf · **Date:** 2026-11-22 (updated after B3)
 - **Starting point:** `main` at the commit that contains this file
 - **Your branch:** `develop/yusuf` (ADR-0011)
 - **Goal:** implement the backend for the MVP scenarios so the web prototype can switch from mock data to the real API, and the SDD sequence diagrams match running code.
@@ -56,11 +56,37 @@ Then open:
 |---|---|
 | Repository rules, CI, lint, branch model | Done. CI is green on `main`. |
 | Backend skeleton | Done: Spring Boot 4.2.0, Java 21, profiles, typed config, stateless security (everything except health, auth and docs returns 401), rate limiting (off locally), RFC 7807 errors, correlation id, Swagger. |
-| Database | `V1__initial_schema.sql`: the eleven SRS tables with constraints. No entities, no seed data. |
-| API contract | Done: 35 operations in `api/openapi.yaml`, 15 marked `x-mvp: true`. Linted in CI. |
-| Backend features | **Nothing implemented.** All feature packages are empty. This is your work. |
+| Database | `V1__initial_schema.sql` (eleven SRS tables); entities and repositories for all of them (B1, Yusuf); local-only demo data `db/seed/R__demo_data.sql` (B2, Selman). |
+| API contract | Done: 36 operations in `api/openapi.yaml`, 16 marked `x-mvp: true` (logout added with B3). Linted in CI. |
+| Sign-in | Done (B3, Selman, ADR-0015): login, logout, `/me`; JWT in an HttpOnly cookie for browsers or a bearer header; CSRF for cookie requests. |
+| Backend features | **B4–B12 not started.** Next is B4. |
 | Web | Prototype of the three MVP screens on mock data (`web/src/api/mockStore.ts`). Selman switches it to the API endpoint by endpoint as you deliver them. |
-| SDD | Due 2026-11-26. Diagrams are drawn from the MVP scope; your implementation should match the three sequence diagrams (UC-3, UC-4, UC-8). |
+| SDD | Due 2026-11-26. Your implementation should match the sequence diagrams in `docs/sdd/DESIGN_FLOWS.md` (UC-3, UC-4, UC-8); update the diagram when your code differs. |
+
+## 3a. Notes from B1–B3 (read before B4)
+
+**Signed-in user in a controller.** The principal name is the user id; claims carry the rest.
+
+```java
+@GetMapping("/api/v1/staff/{staffId}/agenda")
+public AgendaResponse agenda(@PathVariable Long staffId, JwtAuthenticationToken authentication) {
+  Long userId = Long.valueOf(authentication.getName());
+  Long organizationId = authentication.getToken().getClaim("organizationId"); // null for customers and admin
+  Long ownStaffId = authentication.getToken().getClaim("staffId");            // null unless the user is staff
+  ...
+}
+```
+
+- **Roles** are authorities `ROLE_CUSTOMER`, `ROLE_STAFF`, `ROLE_ORGANIZATION_OWNER`, `ROLE_SYSTEM_ADMIN`. For role checks add `@EnableMethodSecurity` to `common.security.SecurityConfig` once (first PR that needs it) and use `@PreAuthorize("hasRole('STAFF')")`. Organization scoping (`org_id`) is still checked in the service.
+- **Every route is authenticated** except health, `/api/v1/auth/**` and the docs. Public reads in the contract (`security: []`, e.g. `listServices`) must be added to `PUBLIC_PATHS` in `SecurityConfig`.
+- **Testing a secured endpoint:** copy the set-up of `auth/AuthControllerTest` (`@WebMvcTest` + `@Import({SecurityConfig, CorsConfig, JwtConfig})` + `@EnableConfigurationProperties({CorsProperties, JwtProperties})`) and send a real token: `.header("Authorization", "Bearer " + TestTokens.issuer(Clock.systemUTC()).issue(account).value())`. Bearer requests need no CSRF token.
+- **Do not use** spring-security-test's `csrf()` post-processor: it replaces the CSRF repository in the shared test context and breaks other tests. For cookie flows, read `XSRF-TOKEN` from a GET and send it back as `X-XSRF-TOKEN` (see `AuthFlowIT`).
+- **Tests run with the `test` profile** (`application-test.yml`, set in `pom.xml`). The demo data is never loaded in tests; insert what a test needs.
+- **Demo accounts** for manual testing (`make up`): see `backend/README.md`; password `demo-password-2026`, stored as `{bcrypt}…`; `PasswordEncoder` is a bean.
+- **Cross-feature lookups go through a service**, like `catalog.StaffLookupService` used by `auth`. Never inject another feature's repository (ArchUnit fails).
+- **Checkstyle fan-out (max 12 classes, annotations included)** rejects "do everything" classes; split by responsibility (`AuthController` + `AccountController`) instead of asking to relax it. The limit is enforced and cannot be bypassed.
+- **Inject `java.time.Clock`** (bean in `common.config`) instead of calling `Instant.now()`, so lead-time and deadline rules can be tested with a fixed time.
+- **Open items from the B1 review:** `Appointment`'s constructor does not take `endTime` (NOT NULL); `Appointment.setStatus` allows any transition (replace with the transition map in B10); decide whether `catalog.Service` keeps its name (clashes with Spring's `@Service`, write an ADR either way).
 
 ## 4. Your MVP tasks, in order
 
@@ -155,8 +181,8 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
 ## 6. Checklist
 
 - [x] B1 Entities and repositories (merged in PR #7)
-- [ ] B2 Seed data
-- [ ] B3 JWT sign-in
+- [x] B2 Seed data (Selman, `db/seed/R__demo_data.sql`; `DemoDataIT` runs in CI)
+- [x] B3 JWT sign-in (Selman; ADR-0015, `AuthFlowIT` runs in CI)
 - [ ] B4 Catalog reads
 - [ ] B5 Estimation (Eq. 3, Eq. 4)
 - [ ] B6 Free slots (Eq. 1 + rules)

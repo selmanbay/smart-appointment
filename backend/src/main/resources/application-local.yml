@@ -1,4 +1,16 @@
-# docker compose and local runs: Mailpit SMTP, rate limiting off, verbose app logs.
+# docker compose and local runs: Mailpit SMTP, rate limiting off, verbose app logs, demo data.
+spring:
+  flyway:
+    # Demo data for the MVP (handoff B2); never loaded outside the local profile.
+    locations: classpath:db/migration,classpath:db/seed
+
+app:
+  jwt:
+    # Development-only secret; docker compose passes JWT_SECRET from .env instead.
+    secret: ${JWT_SECRET:local-development-secret-not-for-production}
+    # Plain http://localhost, so the cookie cannot be Secure.
+    is-cookie-secure: ${JWT_COOKIE_SECURE:false}
+
 logging:
   level:
     com.smartappointment: DEBUG
