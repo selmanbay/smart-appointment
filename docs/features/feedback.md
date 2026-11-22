@@ -12,13 +12,22 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
 - None
 
 ## Log
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Added the `Feedback` entity and `FeedbackRepository` (with `findByAppointmentId`),
+  mapped field-for-field to the V1 schema.
+- **Why:** B1 (entities and repositories) from the backend MVP handoff.
+- **State / next:** No feedback endpoint yet. Verified with `FeedbackRepositoryTest`
+  (`@DataJpaTest`, Testcontainers) and `make backend-verify`.
+- **Refs:** SRS Table 9, ADR-0001
 
 ### 2026-11-21 · selman · backend
 

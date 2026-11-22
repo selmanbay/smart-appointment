@@ -20,6 +20,18 @@ In progress
 
 ## Log
 
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Added the `Appointment` entity and `AppointmentStatus` enum (allowed transitions per
+  AGENT_RULES section 8) with `AppointmentRepository`, mapped field-for-field to the V1 schema.
+  Cross-feature references (`customerId`, `staffId`, `serviceId`) are plain `Long` columns, not
+  JPA associations, so `booking` stays decoupled from `auth`/`catalog` (ADR-0001).
+- **Why:** B1 (entities and repositories) from the backend MVP handoff.
+- **State / next:** No capacity lock or transition logic yet (B8–B10); the locking-strategy
+  question below is still open. Verified with `AppointmentRepositoryTest` (`@DataJpaTest`,
+  Testcontainers) and `make backend-verify`.
+- **Refs:** SRS Table 9, ADR-0001
+
 ### 2026-11-22 · selman · web
 
 - **Done:** Prototype screens for UC-3 (book: service, working day, staff ranked by estimated wait, free slots, confirm) and UC-5/UC-6 (my appointments: upcoming and past, cancel, reschedule link), plus UC-8 staff daily agenda with status actions limited to the SRS 2.5 transitions. Unit tests cover the transition rules and the appointment detail actions.
