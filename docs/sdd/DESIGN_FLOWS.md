@@ -8,7 +8,7 @@ Diagram sources for the SDD (IEEE 1016, 4+1 views) in Mermaid, written from the 
 |---|---|---|
 | 3.1.1 Class diagram | [Logical view](#1-logical-view-class-diagram) | domain implemented; booking services planned |
 | 3.2.1 Activity diagrams | [Booking validation](#21-activity-1-booking-validation-uc-3-step-6), [Status lifecycle](#22-activity-2-appointment-status-lifecycle-uc-8), [Waiting time and recommendation](#23-activity-3-waiting-time-estimate-and-staff-recommendation-uc-18-uc-19) | rules fixed by the SRS; code planned |
-| 3.2.2 Sequence diagrams | [UC-3 Book](#31-sequence-1-uc-3-book-appointment), [UC-4 Reschedule](#32-sequence-2-uc-4-reschedule-appointment), [UC-8 Record status](#33-sequence-3-uc-8-record-service-status), [UC-2 Sign in](#34-supporting-sequence-uc-2-sign-in) | UC-2 implemented; others planned |
+| 3.2.2 Sequence diagrams | [UC-3 Book](#31-sequence-1-uc-3-book-appointment), [UC-4 Reschedule](#32-sequence-2-uc-4-reschedule-appointment), [UC-8 Record status](#33-sequence-3-uc-8-record-service-status), [UC-2 Sign in](#34-supporting-sequence-uc-2-sign-in-implemented) | UC-2 implemented; others planned |
 | 3.2.3 Data flow | [DFD level 0](#4-process-view-data-flow-diagram-level-0) | |
 | 3.3 Development + physical | [Component and deployment](#5-development-and-physical-view-component-and-deployment-diagram) | implemented as in `docker-compose.yml` |
 
