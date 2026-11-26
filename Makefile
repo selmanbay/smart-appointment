@@ -4,7 +4,7 @@
 .DEFAULT_GOAL := help
 HAS_WEB := $(wildcard web/package.json)
 
-.PHONY: help setup up down logs lint format test verify api-lint backend-lint backend-format backend-test backend-verify web-lint web-format web-test repo-lint
+.PHONY: help setup up down logs db-reset lint format test verify api-lint backend-lint backend-format backend-test backend-verify web-lint web-format web-test repo-lint
 
 help: ## Show this list
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-16s %s\n", $$1, $$2}'
@@ -20,6 +20,9 @@ down: ## Stop all services
 
 logs: ## Follow backend logs
 	docker compose logs -f backend
+
+db-reset: ## Delete the local database volume; the next `make up` recreates schema and demo data
+	docker compose down -v
 
 lint: repo-lint backend-lint web-lint ## All linters, as in CI
 

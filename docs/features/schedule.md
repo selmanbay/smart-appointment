@@ -20,6 +20,35 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `ScheduleLookupService.findWorkingHours(staffId, dayOfWeek)` gives the agenda (B11) that day's working hours in the contract's `HH:mm` shape; the mapping is shared with `getWorkingHours`.
+- **Refs:** handoff B11
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `ScheduleLookupService` gives other features the appointment rule (empty when a service has none) and a staff member's working periods for a weekday, split by the break. `ScheduleService` keeps the contract reads and uses it.
+- **Why:** Free slots (B6) and booking (B8) need these without using schedule repositories (ADR-0001).
+- **Refs:** handoff B6
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Contract operations getAppointmentRule and getWorkingHours: one `ScheduleController`
+  and `ScheduleService`. getAppointmentRule answers 404 only when the service has no rule (per the
+  contract), with no service-existence check. getWorkingHours answers 404 when the staff member
+  does not exist (checked through `catalog.StaffLookupService.existsById`, never its repository)
+  and otherwise returns the configured days in order, empty if none are set. Added
+  `findByStaffIdOrderByDayOfWeek` to `WorkingHoursRepository`. getAppointmentRule is public;
+  getWorkingHours needs sign-in; both are set accordingly in `SecurityConfig`.
+- **Why:** B4 of the backend MVP handoff. The appointment-rule read lives here and not in
+  `catalog`, because `AppointmentRule`'s entity and repository were placed in `schedule` at B1 and
+  ArchUnit forbids a feature from using another feature's repository.
+- **State / next:** Verified with `ScheduleControllerTest`, `ScheduleServiceTest`,
+  `make backend-verify`, and manually against the demo data: `GET /api/v1/services/1/rule` returns
+  the rule without a token; `GET /api/v1/staff/1/working-hours` needs a token and returns Maya
+  Chen's Mon-Fri 09:00-16:00 with a 12:00-13:00 break.
+- **Refs:** handoff B4, SRS F4
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Added `AppointmentRule`, `WorkingHours`, `ScheduleChangeRequest` entities, the

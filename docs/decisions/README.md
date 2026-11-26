@@ -50,3 +50,7 @@ What we gain and lose, and what to watch out for from now on.
 | [0012](0012-mvp-scope.md) | MVP scope follows the SDD critical scenarios | Accepted |
 | [0013](0013-mantine-ui-library.md) | Mantine as the only UI library | Accepted |
 | [0014](0014-swagger-from-contract.md) | Swagger UI serves the contract and the implementation | Accepted |
+| [0015](0015-stateless-jwt-cookie-and-bearer.md) | Stateless JWT in an HttpOnly cookie (web) or a bearer header (Android) | Proposed |
+| [0016](0016-catalog-service-entity-name.md) | Keep the catalog `Service` entity name; qualify Spring's `@Service` annotation instead | Proposed |
+| [0017](0017-learned-duration-no-history.md) | Learned duration starts at the expected duration when there is no history | Proposed |
+| [0018](0018-booking-lock-and-idempotency-key.md) | Bookings lock the staff row; the Idempotency-Key is stored in its own table | Proposed |

@@ -12,13 +12,44 @@
 
 ## Status
 
-Not started
+In progress
 
 ## Open questions
 
-- [ ] For a service with no completed appointments, does learned_duration start at expected_duration? Proposed: yes (handoff B5).
+- [x] For a service with no completed appointments, does learned_duration start at expected_duration? Yes, see ADR-0017.
+- [ ] When no staff member has a free slot that day, should anyone be marked recommended? B7 recommends nobody. (Selman)
+- [ ] `bookedSlots` counts the day's appointments except cancelled ones (completed and no-show included), and `meanRating` is rounded to one decimal. Does that match the staff card? (Selman)
 
 ## Log
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Eq. 3 is now applied on every completion (B10): `CatalogService.recordServiceDuration` locks the service row, computes the new learned duration from `service_end_at - service_start_at` with `LearnedDuration.next` and stores it in the same transaction as the COMPLETED status. The lock keeps two completions of the same service from overwriting each other.
+- **Refs:** handoff B10, SRS Eq. 3, ADR-0017
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** B7 staff recommendation: `GET /api/v1/services/{serviceId}/staff-recommendations?date` (contract `listStaffRecommendations`). Every active staff member who provides the service is ranked by the estimated wait of their next free slot that day (Eq. 4, via the B6 slot computation); ties go to the higher mean rating, unrated staff after rated ones, staff without a free slot last, then staff id. The first option is recommended with `recommendationReason` "Shortest estimated wait", but only if it has a free slot. Each option carries the workload: `totalSlots` from Eq. 1 (`SlotsPerDay`, capacity included) and `bookedSlots` (the day's appointments, cancelled ones not counted). Computed on request, never stored. The ordering lives in `estimation.StaffRanking` (plain Java).
+- **State / next:** 147 tests pass (`make backend-verify`, Docker up); `StaffRecommendationsIT` ranks Maya and Daniel against the demo data. Not yet tried in the web app.
+- **Refs:** handoff B7, UC-18, UC-19, SRS Eq. 1, Eq. 4
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Completed B5 as the handoff specifies: `estimation.SlotsPerDay` (Eq. 1) and `estimation.Utilisation` (Eq. 2), plain Java, with the SRS examples as unit tests (21 slots for 09-12 and 13-17 at 20 min; 17 × 20 min in 420 min ≈ 81 %), plus buffer, capacity 2 and empty-day cases. Two more Eq. 4 tests: `F_0` = now on the current day, and an on-time run with no wait.
+- **State / next:** This corrects the 2026-11-22 entry, which left Eq. 1 and Eq. 2 for later. B6 (free slots) uses `SlotsPerDay`; B7 and analytics use `Utilisation`. Not wired into any bean or endpoint yet.
+- **Refs:** B5, SRS Eq. 1–4
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** `estimation.LearnedDuration.next(...)` (Eq. 3) and `estimation.WaitingTimeEstimator.estimate(...)`
+  (Eq. 4, including the capacity > 1 parallel-position case) implemented as plain Java, no Spring, no
+  repositories; `ArchitectureTest.estimationIsPlainJava` and the rest of `make backend-verify` pass
+  (88 tests: 81 unit/slice/architecture incl. 5 new estimation unit tests, plus 7 integration).
+- **Why:** B5, next step after catalog reads (B4) towards free slots (B6) and staff recommendation (B7).
+- **State / next:** Not wired into any Spring bean or controller yet; B6/B7/B10/B11 call these classes
+  directly once they exist. No Eq. 1 (slots per day) or Eq. 2 (utilisation) code added here; those stay
+  with the free-slots (B6) and recommendation/analytics work that actually needs them.
+- **Refs:** B5, ADR-0017, SRS Eq. 3, Eq. 4
 
 ### 2026-11-22 · selman · docs
 

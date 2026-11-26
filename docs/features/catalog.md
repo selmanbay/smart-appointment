@@ -20,6 +20,29 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Lookups for booking: `CatalogService.getActiveService` (404 for a missing or inactive service), `findServices`, and in `StaffLookupService` the capacity of an active provider and the list of active providers of a service with their names. The name query joins the user account by entity name so catalog keeps no Java dependency on auth.
+- **Refs:** handoff B6, B7
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Contract operation listServices: `CatalogController` and `CatalogService` filter to
+  active services of the organization and answer 404 when the organization does not exist. Added
+  `findByOrganizationIdAndIsActiveTrue` to `ServiceRepository`, `existsById` to `StaffLookupService`
+  (now also used by `schedule`), and marked the route public (GET only) in `SecurityConfig`. The
+  `getAppointmentRule` read lives in `schedule` instead, next to the entity and repository B1 put
+  there; see that feature's log.
+- **Why:** B4 of the backend MVP handoff; keeping a feature's reads next to its own repository
+  avoids a cross-feature repository dependency ArchUnit would reject.
+- **State / next:** `CatalogService` is annotated with the fully-qualified
+  `org.springframework.stereotype.Service` per ADR-0016 (Proposed), because importing it would
+  shadow the `Service` entity the class reads. Verified with `CatalogControllerTest`,
+  `CatalogServiceTest`, `make backend-verify`, and manually against the demo data (`make up`):
+  `GET /api/v1/organizations/1/services` returns the two active services with their learned
+  durations, no token needed; a missing organization answers 404.
+- **Refs:** handoff B4, ADR-0016, SRS F3
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Added `Staff` and `Service` entities with their repositories. The staff-provides-

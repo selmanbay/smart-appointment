@@ -17,8 +17,24 @@ In progress
 ## Open questions
 
 - [x] Is UC-13 (logo, terminology) part of the MVP? No (ADR-0012).
+- [ ] Does `getOrganization` need `ownerName` populated? Returns `null` for now; computing it needs
+  owner data from `auth` and the admin-facing operations that would use it are out of MVP scope
+  (ADR-0012).
 
 ## Log
+
+### 2026-11-22 · yusuf · backend
+
+- **Done:** Contract operation getOrganization: `OrganizationController` and `OrganizationService`,
+  mapped to `OrganizationResponse`. Added `existsById` so other features can check organization
+  existence without touching the repository (used by `catalog`). Marked the route public (GET only)
+  in `SecurityConfig`.
+- **Why:** B4 of the backend MVP handoff.
+- **State / next:** `ownerName` is always `null` for now (see open question). Verified with
+  `OrganizationControllerTest`, `OrganizationServiceTest`, `make backend-verify`, and manually
+  against the demo data: `GET /api/v1/organizations/1` returns Northbridge University's profile
+  without a token; `GET /api/v1/organizations/999` answers 404.
+- **Refs:** handoff B4, SRS F2
 
 ### 2026-11-22 · yusuf · backend
 

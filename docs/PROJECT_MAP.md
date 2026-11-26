@@ -41,7 +41,9 @@ smart-appointment/
 │       │   ├── application.yml              defaults + env vars
 │       │   ├── application-local.yml        docker compose / local
 │       │   ├── application-prod.yml         hosted
-│       │   └── db/migration/V1__initial_schema.sql   SRS Table 9
+│       │   ├── db/migration/V1__initial_schema.sql   SRS Table 9
+│       │   ├── db/migration/V2__booking_idempotency_key.sql   ADR-0018
+│       │   └── db/seed/R__demo_data.sql             demo data, local profile only
 │       └── test/java/com/smartappointment/
 │           ├── ArchitectureTest.java, FeatureRules.java   ArchUnit rules
 │           ├── BackendApplicationIT.java                  full app + PostgreSQL
@@ -79,6 +81,7 @@ smart-appointment/
 │   ├── features/<feature>.md        scope, status, open questions, log per feature
 │   ├── decisions/NNNN-*.md          architecture decision records
 │   ├── handoff/                     cold-start handoffs between people (start here when you take over work)
+│   ├── sdd/                         SDD sources: WORK_HISTORY.md (who did what, from git), DESIGN_FLOWS.md (Mermaid diagrams)
 │   ├── srs/                         SRS PDF (source of requirements)
 │   ├── design/UI_GUIDELINES.md      tokens, components, spacing and copy rules for every screen
 │   └── design/                      UI screenshots and static HTML prototype (reference only)
@@ -133,7 +136,7 @@ Find your task, then work only in the listed places.
 |---|---|---|---|---|
 | A new or changed endpoint | `api/openapi.yaml` first (own PR), then `backend/.../<feature>/` | feature file, CONTRIBUTING 6, AGENT_RULES 14 | `./mvnw verify` | feature file |
 | Business rule (capacity, deadlines, status) | `backend/.../<feature>/<Name>Service` | SRS 2.2 and 2.5, feature file | unit test + `./mvnw verify` | feature file |
-| Waiting time / recommendation (Eq. 3, Eq. 4) | `backend/.../estimation/` | SRS 2.6, estimation file | unit tests, `ArchitectureTest` | estimation |
+| Waiting time / recommendation (Eq. 1–4) | `backend/.../estimation/` | SRS 2.6, estimation file | unit tests, `ArchitectureTest` | estimation |
 | Database change | new `backend/src/main/resources/db/migration/V<n>__*.sql` | SRS 2.5, `V1__initial_schema.sql` | `BackendApplicationIT` (needs Docker) | feature file |
 | Cross-cutting (errors, security, rate limit, config) | `backend/.../common/<area>/` | ADR-0008 | `./mvnw verify` | platform |
 | New environment variable | `common/config/*Properties`, `application*.yml`, `.env.example` | AGENT_RULES 14 | app starts with defaults | platform |
@@ -224,6 +227,7 @@ Limits (functions, parameters, complexity, file length) and naming rules: AGENT_
 make setup                   # once: git hooks, .env from .env.example
 make up                      # db, mailpit, backend (docker compose up --build)
 make verify                  # all lint and tests, as in CI
+make db-reset                # wipe the local database; next `make up` reloads schema and demo data
 ```
 
 | Service | Address | Notes |

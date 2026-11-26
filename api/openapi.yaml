@@ -14,6 +14,13 @@ info:
     - Lists that can grow are paginated with `page` (0-based) and `size` (max 100).
     - Every operation belongs to a rate-limit group (`x-rate-limit-group`: auth, booking or default, ADR-0008).
     - `x-srs` links an operation to the SRS use case or function; `x-mvp: true` marks operations in the MVP (ADR-0012).
+
+    Authentication (ADR-0015)
+    - The web app signs in with `POST /auth/login`; the response sets an HttpOnly `sa_access` cookie that the
+      browser sends to `/api` automatically. State-changing requests that rely on the cookie must send the
+      `XSRF-TOKEN` cookie value back in the `X-XSRF-TOKEN` header.
+    - The Android app reads `accessToken` from the login response and sends `Authorization: Bearer <token>`;
+      bearer requests do not need the CSRF header.
   license:
     name: Proprietary (course project)
     identifier: LicenseRef-Proprietary
@@ -22,6 +29,7 @@ servers:
     description: Local (docker compose)
 security:
   - bearerAuth: []
+  - cookieAuth: []
 
 tags:
   - name: auth
@@ -83,13 +91,38 @@ paths:
             example: { email: alex.morgan@example.com, password: correct-horse-battery }
       responses:
         '200':
-          description: Signed in.
+          description: Signed in. The same token is returned in the body (for mobile clients) and set as an HttpOnly cookie (for browsers).
+          headers:
+            Set-Cookie:
+              description: '`sa_access=<jwt>; Path=/api; HttpOnly; SameSite=Strict; Max-Age=<lifetime>` (`Secure` outside local runs).'
+              schema: { type: string }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/AuthResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      operationId: logout
+      summary: Sign out in the browser
+      description: Clears the access cookie. Tokens are stateless, so a bearer token stays valid until it expires; mobile clients simply discard it.
+      x-srs: UC-2
+      x-mvp: true
+      x-rate-limit-group: auth
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/CsrfToken' }
+      responses:
+        '204':
+          description: Signed out.
+          headers:
+            Set-Cookie:
+              description: '`sa_access=; Path=/api; Max-Age=0` removes the cookie.'
+              schema: { type: string }
+        '403': { $ref: '#/components/responses/Forbidden' }
 
   /me:
     get:
@@ -930,6 +963,12 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: Mobile clients. Token from `AuthResponse.accessToken`.
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sa_access
+      description: Browsers. Set by `login`; state-changing requests also need the `X-XSRF-TOKEN` header.
 
   parameters:
     OrganizationId:
@@ -967,6 +1006,12 @@ components:
       name: size
       in: query
       schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    CsrfToken:
+      name: X-XSRF-TOKEN
+      in: header
+      required: false
+      description: Value of the `XSRF-TOKEN` cookie. Required on state-changing requests authenticated by cookie; not needed with a bearer token.
+      schema: { type: string }
     IdempotencyKey:
       name: Idempotency-Key
       in: header
