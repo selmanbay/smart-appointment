@@ -41,7 +41,9 @@ class CatalogControllerTest {
     mockMvc
         .perform(get("/api/v1/organizations/1/services"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name").value("Academic advising"));
+        .andExpect(jsonPath("$[0].name").value("Academic advising"))
+        .andExpect(jsonPath("$[0].expectedDurationMinutes").value(30))
+        .andExpect(jsonPath("$[0].isActive").value(true));
   }
 
   @Test
