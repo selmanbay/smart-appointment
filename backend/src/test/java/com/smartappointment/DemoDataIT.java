@@ -52,6 +52,35 @@ class DemoDataIT {
   }
 
   @Test
+  void upcomingBookingsRespectMaxActivePerUserAndLeaveTheDemoCustomerRoomToBook(
+      @Autowired JdbcTemplate jdbcTemplate) {
+    String activeBookingsPerCustomerAndService =
+        "SELECT a.customer_id, a.service_id, count(*) AS active, r.max_active_per_user"
+            + " FROM appointment a JOIN appointment_rule r ON r.service_id = a.service_id"
+            + " WHERE a.status IN ('BOOKED', 'CHECKED_IN', 'IN_SERVICE')"
+            + " GROUP BY a.customer_id, a.service_id, r.max_active_per_user";
+
+    assertThat(
+            count(
+                jdbcTemplate,
+                "SELECT count(*) FROM ("
+                    + activeBookingsPerCustomerAndService
+                    + ") AS active"
+                    + " WHERE active.active > active.max_active_per_user"))
+        .isZero();
+    assertThat(
+            count(
+                jdbcTemplate,
+                "SELECT count(*) FROM ("
+                    + activeBookingsPerCustomerAndService
+                    + ") AS active"
+                    + " JOIN app_user u ON u.user_id = active.customer_id"
+                    + " WHERE u.email = 'alex.morgan@example.com'"
+                    + " AND active.active < active.max_active_per_user"))
+        .isEqualTo(1);
+  }
+
+  @Test
   void runningTheSeedAgainChangesNothing(@Autowired JdbcTemplate jdbcTemplate) throws Exception {
     long appointmentsBefore = count(jdbcTemplate, "SELECT count(*) FROM appointment");
     String seed =

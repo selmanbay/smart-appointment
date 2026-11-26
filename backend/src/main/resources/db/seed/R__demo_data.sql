@@ -122,9 +122,12 @@ BEGIN
     FROM appointment
     WHERE status = 'COMPLETED' AND appt_id % 3 <> 0;
 
-    -- Upcoming: booked appointments over the next working week for both staff members.
+    -- Upcoming: every third free morning or afternoon slot over the next working week. Alex Morgan
+    -- (the demo customer) gets one booking and every other customer two, so nobody exceeds the
+    -- advising rule's max_active_per_user (2) and Alex can still book during the demo.
     INSERT INTO appointment (customer_id, staff_id, service_id, start_time, end_time, status, booked_at)
-    SELECT customers[1 + (slot.n % array_length(customers, 1))::int],
+    SELECT CASE WHEN slot.k = 1 THEN customers[1]
+                ELSE customers[2 + ((slot.k - 2) % (array_length(customers, 1) - 1))::int] END,
            slot.staff_member,
            advising,
            slot.starts_at,
@@ -132,15 +135,21 @@ BEGIN
            'BOOKED',
            now() - INTERVAL '1 day'
     FROM (
-        SELECT row_number() OVER (ORDER BY day, slot_time, staff_member) AS n,
-               staff_member,
-               ((day + slot_time) AT TIME ZONE zone) AS starts_at
-        FROM generate_series(1, 7) AS days_ahead,
-             LATERAL (SELECT current_date + days_ahead AS day) AS calendar,
-             unnest(ARRAY[TIME '09:30', TIME '10:30', TIME '14:00']) AS slot_time,
-             unnest(ARRAY[maya, daniel]) AS staff_member
-        WHERE extract(isodow FROM day) BETWEEN 1 AND 5
+        SELECT row_number() OVER (ORDER BY candidate.n) AS k,
+               candidate.staff_member,
+               candidate.starts_at
+        FROM (
+            SELECT row_number() OVER (ORDER BY day, slot_time, staff_member) AS n,
+                   staff_member,
+                   ((day + slot_time) AT TIME ZONE zone) AS starts_at
+            FROM generate_series(1, 7) AS days_ahead,
+                 LATERAL (SELECT current_date + days_ahead AS day) AS calendar,
+                 unnest(ARRAY[TIME '09:30', TIME '10:30', TIME '14:00']) AS slot_time,
+                 unnest(ARRAY[maya, daniel]) AS staff_member
+            WHERE extract(isodow FROM day) BETWEEN 1 AND 5
+        ) AS candidate
+        WHERE candidate.n % 3 = 1
     ) AS slot
-    WHERE slot.n % 2 = 0 OR slot.n <= 4;
+    WHERE slot.k <= 2 * array_length(customers, 1) - 1;
 END
 $$;

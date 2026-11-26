@@ -20,6 +20,12 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Fixed the demo data (B2): every customer, Alex Morgan included, had three or four upcoming advising bookings although the advising rule allows `max_active_per_user` = 2, so the demo customer could not have booked once B8 enforces the rule. Upcoming bookings now give Alex one and every other customer two (9 in total, spread over the next working week). `DemoDataIT` checks that no customer exceeds the rule and that Alex can still book.
+- **State / next:** An existing local database keeps the old rows (the seed is a no-op once the demo organization exists); run `make db-reset` before the next `make up`.
+- **Refs:** handoff B2, `db/seed/R__demo_data.sql`, SRS 2.5
+
 ### 2026-11-22 · selman · backend
 
 - **Done:** Demo data (B2) gives the booking flow two staff members with history, so slots, waiting estimates and the agenda have realistic input once B5–B11 exist.
