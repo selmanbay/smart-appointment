@@ -20,6 +20,12 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Completed B5 as the handoff specifies: `estimation.SlotsPerDay` (Eq. 1) and `estimation.Utilisation` (Eq. 2), plain Java, with the SRS examples as unit tests (21 slots for 09-12 and 13-17 at 20 min; 17 × 20 min in 420 min ≈ 81 %), plus buffer, capacity 2 and empty-day cases. Two more Eq. 4 tests: `F_0` = now on the current day, and an on-time run with no wait.
+- **State / next:** This corrects the 2026-11-22 entry, which left Eq. 1 and Eq. 2 for later. B6 (free slots) uses `SlotsPerDay`; B7 and analytics use `Utilisation`. Not wired into any bean or endpoint yet.
+- **Refs:** B5, SRS Eq. 1–4
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** `estimation.LearnedDuration.next(...)` (Eq. 3) and `estimation.WaitingTimeEstimator.estimate(...)`

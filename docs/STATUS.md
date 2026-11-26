@@ -2,16 +2,16 @@
 
 The current state of the project. Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first for the structure and commands. Update rules: [`guides/LOGGING.md`](guides/LOGGING.md) section 3.
 
-Last updated: 2026-11-22
+Last updated: 2026-11-26
 
 ## Summary
 
 Team rules, folder structure and the backend skeleton are ready. Entities and repositories for
 all eleven SRS tables are in place (B1). Demo seed data (B2) and JWT sign-in (B3) are done and
 verified locally with Docker. Catalog reads (B4: organization profile, active services,
-appointment rule, working hours) are done. Waiting-time estimation (B5: learned duration Eq. 3,
-estimated wait Eq. 4) is done, plain Java with no Spring dependency. `make backend-verify` passes
-(88 tests: 81 unit, slice and architecture plus 7 integration) and the app starts against
+appointment rule, working hours) are done. Waiting-time estimation (B5: slots per day Eq. 1, utilisation
+Eq. 2, learned duration Eq. 3, estimated wait Eq. 4) is done, plain Java with no Spring dependency.
+`make backend-verify` passes (102 tests: 94 unit, slice and architecture plus 8 integration) and the app starts against
 PostgreSQL with `ddl-auto: validate`. Goal: an MVP that runs locally (backend + React + PostgreSQL
 via `docker compose up`), see ADR-0005.
 
@@ -25,7 +25,7 @@ via `docker compose up`), see ADR-0005.
 | [Services and staff](features/catalog.md) | F3 | In progress | listServices done (B4); appointment rule read lives in schedule |
 | [Working hours, capacity and rules](features/schedule.md) | F4 | In progress | getAppointmentRule, getWorkingHours done (B4) |
 | [Booking: slots, booking, cancel, reschedule, status](features/booking.md) | F5, F6, F8 | In progress | Web prototype on mock data; `Appointment` entity and repository only |
-| [Waiting time and staff recommendation](features/estimation.md) | F9 | In progress | Learned duration (Eq. 3) and estimated wait (Eq. 4) done (B5); staff recommendation (B7) next |
+| [Waiting time and staff recommendation](features/estimation.md) | F9 | In progress | Eq. 1–4 calculations done (B5); staff recommendation (B7) next |
 | [Notifications and reminders](features/notification.md) | F7 | In progress | Entity and repository only |
 | [Workload and analytics](features/analytics.md) | F10 | Not started | |
 | [Feedback](features/feedback.md) | F11 | In progress | Entity and repository only |

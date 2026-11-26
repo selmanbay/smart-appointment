@@ -37,6 +37,31 @@ class WaitingTimeEstimatorTest {
   }
 
   @Test
+  void todayTheFirstAppointmentCannotStartBeforeNow() {
+    // SRS Eq. 4: F_0 is the current time on the current day.
+    Instant now = OPENING_TIME.plusSeconds(15 * 60);
+    ScheduledService first = new ScheduledService(OPENING_TIME, Duration.ofMinutes(30));
+
+    WaitingTimeEstimate estimate = WaitingTimeEstimator.estimate(List.of(first), 1, now).get(0);
+
+    assertThat(estimate.projectedStart()).isEqualTo(now);
+    assertThat(estimate.projectedFinish()).isEqualTo(now.plusSeconds(30 * 60));
+    assertThat(estimate.waitingTime()).isEqualTo(Duration.ofMinutes(15));
+  }
+
+  @Test
+  void anOnTimeRunCausesNoWait() {
+    ScheduledService first = new ScheduledService(OPENING_TIME, Duration.ofMinutes(20));
+    ScheduledService second =
+        new ScheduledService(OPENING_TIME.plusSeconds(30 * 60), Duration.ofMinutes(20));
+
+    List<WaitingTimeEstimate> estimates =
+        WaitingTimeEstimator.estimate(List.of(first, second), 1, OPENING_TIME);
+
+    assertThat(estimates).extracting(WaitingTimeEstimate::waitingTime).containsOnly(Duration.ZERO);
+  }
+
+  @Test
   void capacityTwoAssignsEachAppointmentToTheEarliestFreePosition() {
     ScheduledService firstAtNine = new ScheduledService(OPENING_TIME, Duration.ofMinutes(30));
     ScheduledService secondAtNine = new ScheduledService(OPENING_TIME, Duration.ofMinutes(30));

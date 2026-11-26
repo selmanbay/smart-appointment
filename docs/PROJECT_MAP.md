@@ -135,7 +135,7 @@ Find your task, then work only in the listed places.
 |---|---|---|---|---|
 | A new or changed endpoint | `api/openapi.yaml` first (own PR), then `backend/.../<feature>/` | feature file, CONTRIBUTING 6, AGENT_RULES 14 | `./mvnw verify` | feature file |
 | Business rule (capacity, deadlines, status) | `backend/.../<feature>/<Name>Service` | SRS 2.2 and 2.5, feature file | unit test + `./mvnw verify` | feature file |
-| Waiting time / recommendation (Eq. 3, Eq. 4) | `backend/.../estimation/` | SRS 2.6, estimation file | unit tests, `ArchitectureTest` | estimation |
+| Waiting time / recommendation (Eq. 1–4) | `backend/.../estimation/` | SRS 2.6, estimation file | unit tests, `ArchitectureTest` | estimation |
 | Database change | new `backend/src/main/resources/db/migration/V<n>__*.sql` | SRS 2.5, `V1__initial_schema.sql` | `BackendApplicationIT` (needs Docker) | feature file |
 | Cross-cutting (errors, security, rate limit, config) | `backend/.../common/<area>/` | ADR-0008 | `./mvnw verify` | platform |
 | New environment variable | `common/config/*Properties`, `application*.yml`, `.env.example` | AGENT_RULES 14 | app starts with defaults | platform |
