@@ -13,6 +13,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -22,15 +24,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * header and protects it. Only then is the cookie's token presented to the JWT filter as a bearer
  * header. Resolving the cookie inside the bearer resolver instead would make Spring Security treat
  * cookie requests as bearer requests and skip CSRF protection.
+ *
+ * <p>A cookie whose token does not verify (expired, or signed with an earlier secret) is ignored,
+ * so the request continues unauthenticated. Otherwise the stale cookie, which browser code cannot
+ * remove because it is HttpOnly, would turn sign-in, sign-out and public pages into 401s.
  */
 public final class AccessCookieAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String BEARER_PREFIX = "Bearer ";
 
   private final String cookieName;
+  private final JwtDecoder jwtDecoder;
 
-  public AccessCookieAuthenticationFilter(String cookieName) {
+  public AccessCookieAuthenticationFilter(String cookieName, JwtDecoder jwtDecoder) {
     this.cookieName = cookieName;
+    this.jwtDecoder = jwtDecoder;
   }
 
   /** True when the request authenticates with a header, so it needs no CSRF token. */
@@ -59,7 +67,17 @@ public final class AccessCookieAuthenticationFilter extends OncePerRequestFilter
     return Arrays.stream(cookies)
         .filter(cookie -> cookieName.equals(cookie.getName()) && !cookie.getValue().isBlank())
         .map(Cookie::getValue)
-        .findFirst();
+        .findFirst()
+        .filter(this::isValid);
+  }
+
+  private boolean isValid(String token) {
+    try {
+      jwtDecoder.decode(token);
+      return true;
+    } catch (JwtException exception) {
+      return false;
+    }
   }
 
   private static final class BearerRequest extends HttpServletRequestWrapper {

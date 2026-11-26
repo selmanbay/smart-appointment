@@ -21,6 +21,11 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Fixed: an `sa_access` cookie whose token no longer verifies (expired, or signed with an earlier `JWT_SECRET`) made login, logout and public endpoints answer 401, and the browser cannot remove the HttpOnly cookie itself. The cookie filter now ignores such a cookie, so the request continues unauthenticated (login works, `/me` still answers 401). Bearer headers are unchanged: a bad bearer token is still a 401.
+- **Refs:** ADR-0015, `AccessCookieAuthenticationFilterTest`, `AuthControllerTest.loginIgnoresAStaleAccessCookie`
+
 ### 2026-11-22 · selman · backend
 
 - **Done:** B3 sign-in (ADR-0015, Proposed): `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/me`. Stateless HS256 JWT (Spring Security resource server, no extra library) with `sub`, `role`, `organizationId`, `staffId`; secret from `JWT_SECRET` (startup fails under 32 bytes). Browsers get an HttpOnly `SameSite=Strict` cookie on `/api`; Android uses the bearer token from the response body. CSRF stays on for cookie requests (SPA `XSRF-TOKEN` cookie + `X-XSRF-TOKEN` header); bearer requests and login are exempt. Passwords via the delegating encoder (`{bcrypt}`); unknown e-mail and wrong password give the same 401 problem and take the same time. Contract updated (logout, `cookieAuth`, CSRF header).

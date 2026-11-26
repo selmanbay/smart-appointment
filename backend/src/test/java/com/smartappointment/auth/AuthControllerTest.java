@@ -64,6 +64,20 @@ class AuthControllerTest {
   }
 
   @Test
+  void loginIgnoresAStaleAccessCookie() throws Exception {
+    when(authService.login(any()))
+        .thenReturn(new AuthResponse("token-value", "Bearer", 28800, ALEX));
+
+    mockMvc
+        .perform(
+            post("/api/v1/auth/login")
+                .cookie(new Cookie("sa_access", "signed-with-an-old-secret"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(LOGIN_BODY))
+        .andExpect(status().isOk());
+  }
+
+  @Test
   void loginRejectsAMalformedBody() throws Exception {
     mockMvc
         .perform(
@@ -156,6 +170,13 @@ class AuthControllerTest {
         .andExpect(status().isOk())
         .andExpect(cookie().exists("XSRF-TOKEN"))
         .andExpect(cookie().httpOnly("XSRF-TOKEN", false));
+  }
+
+  @Test
+  void meAnswers401ForAStaleCookie() throws Exception {
+    mockMvc
+        .perform(get("/api/v1/me").cookie(new Cookie("sa_access", "signed-with-an-old-secret")))
+        .andExpect(status().isUnauthorized());
   }
 
   @Test

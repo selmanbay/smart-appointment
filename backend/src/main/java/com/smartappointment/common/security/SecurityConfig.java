@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,6 +46,7 @@ public class SecurityConfig {
   SecurityFilterChain apiSecurity(
       HttpSecurity http,
       JwtProperties jwtProperties,
+      JwtDecoder jwtDecoder,
       JwtAuthenticationConverter jwtAuthenticationConverter)
       throws Exception {
     http.csrf(csrf ->
@@ -52,7 +54,8 @@ public class SecurityConfig {
                 .ignoringRequestMatchers(AccessCookieAuthenticationFilter::hasAuthorizationHeader)
                 .ignoringRequestMatchers("/api/v1/auth/login"))
         .addFilterAfter(
-            new AccessCookieAuthenticationFilter(jwtProperties.cookieName()), CsrfFilter.class)
+            new AccessCookieAuthenticationFilter(jwtProperties.cookieName(), jwtDecoder),
+            CsrfFilter.class)
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .cors(Customizer.withDefaults())
         .sessionManagement(

@@ -16,7 +16,7 @@ public class AccountController {
   }
 
   @GetMapping("/api/v1/me")
-  public AccountResponse currentAccount(Principal principal) {
+  public AccountResponse getCurrentAccount(Principal principal) {
     return accountService.currentAccount(Long.valueOf(principal.getName()));
   }
 }
