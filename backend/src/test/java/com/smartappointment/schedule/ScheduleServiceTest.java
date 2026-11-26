@@ -63,6 +63,8 @@ class ScheduleServiceTest {
 
   private ScheduleService service() {
     return new ScheduleService(
-        appointmentRuleRepository, workingHoursRepository, staffLookupService);
+        new ScheduleLookupService(appointmentRuleRepository, workingHoursRepository),
+        workingHoursRepository,
+        staffLookupService);
   }
 }

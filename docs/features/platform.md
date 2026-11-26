@@ -21,6 +21,22 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `common.web.PageMetadata` is the shared paging block of list responses (contract `PageInfo`: page, size, totalElements, totalPages). Named `PageMetadata` because the naming rule bans an `Info` suffix; the JSON shape matches the contract.
+- **Refs:** handoff B11, AGENT_RULES section 12
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** 409 problems from `BusinessRuleException` can now carry a `code` and a `title` (contract `BookingProblem`); `GlobalExceptionHandler` adds them to the RFC 7807 body. Older callers without a code are unchanged.
+- **Refs:** handoff B8, contract `BookingProblem`
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Removed `hibernate.jdbc.time_zone: UTC` from `application.yml`. It made Hibernate convert `TIME` columns between UTC and the JVM's default zone: on a JVM at +02:00, saving working hours 09:00 stored 07:00, and the seeded 09:00 was read as 11:00. Instants were not affected; they are `timestamptz` and Hibernate binds them as UTC without the setting. `ScheduleRepositoryTest` and `AppointmentRepositoryTest` now check the stored values with SQL after clearing the persistence context, so the bug cannot hide behind Hibernate's cache again.
+- **Why:** Found by `FreeSlotsIT` (B6): slots came back two hours late. Docker images run the JVM in UTC, so `make up` did not show it.
+- **Refs:** handoff B1, B6
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Verified B2 (demo data) and B3 (JWT sign-in) on a machine with Docker, on `feature/verify-b2-b3` branched from `develop/selman`. `make lint` passed. `make backend-verify` passed: 58 unit/slice/ArchUnit tests + 7 integration tests (`AuthFlowIT`, `BackendApplicationIT`, `DemoDataIT`, all `*RepositoryTest`), 0 failures, 0 skipped. `make up` started the stack; Swagger UI loaded at `/swagger-ui/index.html`; `POST /api/v1/auth/login` for `alex.morgan@example.com` returned 200 with a `sa_access` cookie; `GET /api/v1/me` with that cookie returned Alex Morgan; the database held 1 organization, 9 users, 117 appointments.

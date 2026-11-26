@@ -12,15 +12,18 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        jdbc:
-          time_zone: UTC
+    # No hibernate.jdbc.time_zone: Instant columns are timestamptz and already bound as UTC, and the
+    # setting would shift the TIME columns (working hours) by the JVM's offset.
   flyway:
     enabled: true
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
+    # Bounded so an unreachable SMTP server cannot hold a booking request for long (UC-20).
+    properties:
+      "[mail.smtp.connectiontimeout]": ${MAIL_TIMEOUT_MS:5000}
+      "[mail.smtp.timeout]": ${MAIL_TIMEOUT_MS:5000}
+      "[mail.smtp.writetimeout]": ${MAIL_TIMEOUT_MS:5000}
   mvc:
     problemdetails:
       enabled: true

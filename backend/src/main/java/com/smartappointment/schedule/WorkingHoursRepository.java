@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface WorkingHoursRepository extends JpaRepository<WorkingHours, Long> {
 
   List<WorkingHours> findByStaffIdOrderByDayOfWeek(Long staffId);
+
+  List<WorkingHours> findByStaffIdAndDayOfWeekOrderByStartTime(Long staffId, short dayOfWeek);
 }

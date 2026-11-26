@@ -2,6 +2,7 @@ package com.smartappointment.organization;
 
 import com.smartappointment.common.web.ResourceNotFoundException;
 import com.smartappointment.organization.dto.OrganizationResponse;
+import java.time.ZoneId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,15 @@ public class OrganizationService {
             .findById(organizationId)
             .orElseThrow(() -> new ResourceNotFoundException("Organization", organizationId));
     return toResponse(organization);
+  }
+
+  /** The organization's time zone, in which slots are generated (AGENT_RULES section 8). */
+  @Transactional(readOnly = true)
+  public ZoneId getTimezone(Long organizationId) {
+    return organizationRepository
+        .findById(organizationId)
+        .map(organization -> ZoneId.of(organization.getTimezone()))
+        .orElseThrow(() -> new ResourceNotFoundException("Organization", organizationId));
   }
 
   @Transactional(readOnly = true)

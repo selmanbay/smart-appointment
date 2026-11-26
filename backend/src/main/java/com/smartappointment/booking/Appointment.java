@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Duration;
 import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -85,8 +86,16 @@ public class Appointment {
     return startTime;
   }
 
-  public void setStartTime(Instant startTime) {
-    this.startTime = startTime;
+  /** SRS Eq. 3: {@code d_actual = service_end_at - service_start_at} of a completed service. */
+  public Duration measuredServiceDuration() {
+    return Duration.between(serviceStartAt, serviceEndAt);
+  }
+
+  /** UC-4: the same appointment row moves to another staff member or time, keeping its history. */
+  public void moveTo(Long newStaffId, Instant newStartTime, Instant newEndTime) {
+    this.staffId = newStaffId;
+    this.startTime = newStartTime;
+    this.endTime = newEndTime;
   }
 
   public Instant getEndTime() {

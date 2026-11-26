@@ -9,7 +9,7 @@ public final class LearnedDuration {
 
   private static final BigDecimal ALPHA = new BigDecimal("0.2");
   private static final BigDecimal ONE_MINUS_ALPHA = new BigDecimal("0.8");
-  private static final BigDecimal MINUTES_PER_SECOND_DIVISOR = BigDecimal.valueOf(60);
+  private static final BigDecimal SECONDS_PER_MINUTE = BigDecimal.valueOf(60);
   private static final int DIVISION_SCALE = 10;
 
   private LearnedDuration() {}
@@ -34,8 +34,24 @@ public final class LearnedDuration {
         .setScale(2, RoundingMode.HALF_UP);
   }
 
+  /**
+   * The duration Eq. 4 uses for a service: its learned duration, or its expected duration while it
+   * has no completed appointment (ADR-0017).
+   */
+  public static Duration current(BigDecimal learnedDurationMinutes, int expectedDurationMinutes) {
+    if (learnedDurationMinutes == null) {
+      return Duration.ofMinutes(expectedDurationMinutes);
+    }
+    long seconds =
+        learnedDurationMinutes
+            .multiply(SECONDS_PER_MINUTE)
+            .setScale(0, RoundingMode.HALF_UP)
+            .longValueExact();
+    return Duration.ofSeconds(seconds);
+  }
+
   private static BigDecimal toMinutes(Duration duration) {
     return BigDecimal.valueOf(duration.toSeconds())
-        .divide(MINUTES_PER_SECOND_DIVISOR, DIVISION_SCALE, RoundingMode.HALF_UP);
+        .divide(SECONDS_PER_MINUTE, DIVISION_SCALE, RoundingMode.HALF_UP);
   }
 }

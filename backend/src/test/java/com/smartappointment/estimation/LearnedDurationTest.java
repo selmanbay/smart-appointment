@@ -21,4 +21,15 @@ class LearnedDurationTest {
 
     assertThat(next).isEqualByComparingTo("28.00");
   }
+
+  @Test
+  void currentUsesTheLearnedDurationToTheSecond() {
+    assertThat(LearnedDuration.current(new BigDecimal("32.50"), 30))
+        .isEqualTo(Duration.ofSeconds(32 * 60 + 30));
+  }
+
+  @Test
+  void currentFallsBackToTheExpectedDurationWithoutHistory() {
+    assertThat(LearnedDuration.current(null, 30)).isEqualTo(Duration.ofMinutes(30));
+  }
 }

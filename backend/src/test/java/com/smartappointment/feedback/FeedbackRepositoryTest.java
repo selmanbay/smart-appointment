@@ -8,10 +8,12 @@ import com.smartappointment.auth.UserRole;
 import com.smartappointment.booking.Appointment;
 import com.smartappointment.catalog.Service;
 import com.smartappointment.catalog.Staff;
+import com.smartappointment.feedback.dto.StaffRating;
 import com.smartappointment.organization.Organization;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -44,6 +46,29 @@ class FeedbackRepositoryTest {
     assertThat(loaded.getCreatedAt()).isNotNull();
     assertThat(feedbackRepository.findByAppointmentId(appointment.getAppointmentId()))
         .contains(loaded);
+  }
+
+  @Test
+  void findMeanRatingsAveragesTheRatingsOfEachStaffMembersAppointments(
+      @Autowired TestEntityManager entityManager,
+      @Autowired FeedbackRepository feedbackRepository) {
+    Appointment first = aCompletedAppointment(entityManager);
+    Appointment second =
+        new Appointment(
+            first.getCustomerId(),
+            first.getStaffId(),
+            first.getServiceId(),
+            first.getStartTime().plus(Duration.ofHours(1)));
+    second.setEndTime(second.getStartTime().plus(Duration.ofMinutes(30)));
+    entityManager.persist(second);
+    feedbackRepository.save(new Feedback(first.getAppointmentId(), (short) 4));
+    feedbackRepository.save(new Feedback(second.getAppointmentId(), (short) 5));
+    feedbackRepository.flush();
+
+    List<StaffRating> ratings =
+        feedbackRepository.findMeanRatings(List.of(first.getStaffId(), first.getStaffId() + 1));
+
+    assertThat(ratings).containsExactly(new StaffRating(first.getStaffId(), 4.5));
   }
 
   private Appointment aCompletedAppointment(TestEntityManager entityManager) {

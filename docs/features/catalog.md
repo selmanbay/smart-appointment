@@ -20,6 +20,11 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Lookups for booking: `CatalogService.getActiveService` (404 for a missing or inactive service), `findServices`, and in `StaffLookupService` the capacity of an active provider and the list of active providers of a service with their names. The name query joins the user account by entity name so catalog keeps no Java dependency on auth.
+- **Refs:** handoff B6, B7
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Contract operation listServices: `CatalogController` and `CatalogService` filter to

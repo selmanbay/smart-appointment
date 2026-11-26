@@ -17,8 +17,21 @@ In progress
 ## Open questions
 
 - [x] For a service with no completed appointments, does learned_duration start at expected_duration? Yes, see ADR-0017.
+- [ ] When no staff member has a free slot that day, should anyone be marked recommended? B7 recommends nobody. (Selman)
+- [ ] `bookedSlots` counts the day's appointments except cancelled ones (completed and no-show included), and `meanRating` is rounded to one decimal. Does that match the staff card? (Selman)
 
 ## Log
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** Eq. 3 is now applied on every completion (B10): `CatalogService.recordServiceDuration` locks the service row, computes the new learned duration from `service_end_at - service_start_at` with `LearnedDuration.next` and stores it in the same transaction as the COMPLETED status. The lock keeps two completions of the same service from overwriting each other.
+- **Refs:** handoff B10, SRS Eq. 3, ADR-0017
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** B7 staff recommendation: `GET /api/v1/services/{serviceId}/staff-recommendations?date` (contract `listStaffRecommendations`). Every active staff member who provides the service is ranked by the estimated wait of their next free slot that day (Eq. 4, via the B6 slot computation); ties go to the higher mean rating, unrated staff after rated ones, staff without a free slot last, then staff id. The first option is recommended with `recommendationReason` "Shortest estimated wait", but only if it has a free slot. Each option carries the workload: `totalSlots` from Eq. 1 (`SlotsPerDay`, capacity included) and `bookedSlots` (the day's appointments, cancelled ones not counted). Computed on request, never stored. The ordering lives in `estimation.StaffRanking` (plain Java).
+- **State / next:** 147 tests pass (`make backend-verify`, Docker up); `StaffRecommendationsIT` ranks Maya and Daniel against the demo data. Not yet tried in the web app.
+- **Refs:** handoff B7, UC-18, UC-19, SRS Eq. 1, Eq. 4
 
 ### 2026-11-26 · yusuf · backend
 

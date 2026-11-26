@@ -6,6 +6,7 @@ import com.smartappointment.TestcontainersConfiguration;
 import com.smartappointment.auth.AppUser;
 import com.smartappointment.auth.AppUserRepository;
 import com.smartappointment.auth.UserRole;
+import com.smartappointment.catalog.dto.StaffMemberSummary;
 import com.smartappointment.organization.Organization;
 import com.smartappointment.organization.OrganizationRepository;
 import org.junit.jupiter.api.Test;
@@ -55,5 +56,51 @@ class CatalogRepositoryTest {
         .extracting(Service::getServiceId)
         .containsExactly(service.getServiceId());
     assertThat(staffRepository.findByUserId(staffUser.getUserId())).contains(loaded);
+  }
+
+  @Test
+  void findsAnActiveStaffMemberOnlyForTheServicesTheyProvide(
+      @Autowired OrganizationRepository organizationRepository,
+      @Autowired AppUserRepository appUserRepository,
+      @Autowired StaffRepository staffRepository,
+      @Autowired ServiceRepository serviceRepository) {
+    Organization organization =
+        organizationRepository.save(new Organization("Northbridge University", "Europe/Istanbul"));
+    AppUser staffUser =
+        new AppUser("Daniel Brooks", "daniel.brooks@example.com", "{bcrypt}hash", UserRole.STAFF);
+    staffUser.setOrganizationId(organization.getOrganizationId());
+    staffUser = appUserRepository.save(staffUser);
+    Service advising =
+        serviceRepository.save(
+            new Service(organization.getOrganizationId(), "Academic advising", 30));
+    Service documents =
+        serviceRepository.save(
+            new Service(organization.getOrganizationId(), "Document request", 15));
+    Staff staff = new Staff(staffUser.getUserId(), 2);
+    staff.getServices().add(advising);
+    Long staffId = staffRepository.save(staff).getStaffId();
+
+    assertThat(
+            staffRepository.findByStaffIdAndIsActiveTrueAndServicesServiceId(
+                staffId, advising.getServiceId()))
+        .map(Staff::getCapacity)
+        .contains(2);
+    assertThat(
+            staffRepository.findByStaffIdAndIsActiveTrueAndServicesServiceId(
+                staffId, documents.getServiceId()))
+        .isEmpty();
+    staff.setTitle("Senior advisor");
+    staffRepository.saveAndFlush(staff);
+    assertThat(staffRepository.findActiveProviders(advising.getServiceId()))
+        .containsExactly(new StaffMemberSummary(staffId, "Daniel Brooks", "Senior advisor", 2));
+    assertThat(staffRepository.findActiveProviders(documents.getServiceId())).isEmpty();
+
+    staff.setActive(false);
+    staffRepository.saveAndFlush(staff);
+    assertThat(
+            staffRepository.findByStaffIdAndIsActiveTrueAndServicesServiceId(
+                staffId, advising.getServiceId()))
+        .isEmpty();
+    assertThat(staffRepository.findActiveProviders(advising.getServiceId())).isEmpty();
   }
 }

@@ -187,13 +187,20 @@ Write each as an ADR with status `Proposed` and tell Selman; do not wait for an 
   `ScheduleControllerTest` run in CI)
 - [x] B5 Estimation (Yusuf; ADR-0017, `LearnedDurationTest`, `WaitingTimeEstimatorTest`,
   `SlotsPerDayTest`, `UtilisationTest`)
-- [ ] B6 Free slots (Eq. 1 + rules)
-- [ ] B7 Staff recommendation
-- [ ] B8 Booking with capacity lock + concurrency test
-- [ ] B9 Reschedule and cancel
-- [ ] B10 Status changes + learned duration
-- [ ] B11 Agenda and my appointments
-- [ ] B12 E-mail notifications
+- [x] B6 Free slots (Yusuf; `FreeSlotsTest`, `SlotGeneratorTest`, `BookingWindowTest`,
+  `SlotControllerTest`, `FreeSlotsIT`)
+- [x] B7 Staff recommendation (Yusuf; `StaffRankingTest`, `StaffOptionsTest`,
+  `StaffRecommendationControllerTest`, `StaffRecommendationsIT`)
+- [x] B8 Booking with capacity lock + concurrency test (Yusuf; ADR-0018, `BookingRuleCheckerTest`,
+  `BookingServiceTest`, `BookingControllerTest`, `BookingConcurrencyIT`)
+- [x] B9 Reschedule and cancel (Yusuf; `RescheduleServiceTest`, `CancellationServiceTest`,
+  `AppointmentChangeControllerTest`, `RescheduleAndCancelIT`)
+- [x] B10 Status changes + learned duration (Yusuf; `StatusTransitionTest`,
+  `AppointmentStatusServiceTest`, `AppointmentStatusControllerTest`, `StatusFlowIT`)
+- [x] B11 Agenda and my appointments (Yusuf; `AccessRulesTest`, `AppointmentWaitsTest`,
+  `AgendaServiceTest`, `AppointmentQueryControllerTest`, `AppointmentReadsIT`)
+- [x] B12 E-mail notifications (Yusuf; `AppointmentNotificationListenerTest`,
+  `SmtpNotificationSenderTest`, `NoticeMessagesTest`, `NotificationIT`)
 
 ## 7. Working agreement
 

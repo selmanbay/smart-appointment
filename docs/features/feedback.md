@@ -20,6 +20,11 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `FeedbackService.findMeanRatingByStaffId(...)`: the mean rating of each staff member's appointments, for the B7 tie-break. Staff without any rating are left out.
+- **Refs:** handoff B7, UC-18
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Added the `Feedback` entity and `FeedbackRepository` (with `findByAppointmentId`),

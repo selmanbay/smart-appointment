@@ -59,6 +59,35 @@ class ScheduleRepositoryTest {
   }
 
   @Test
+  void workingHoursAreStoredAndReadAsWallClockTimes(
+      @Autowired TestEntityManager entityManager,
+      @Autowired WorkingHoursRepository workingHoursRepository) {
+    // TIME columns hold the organization's local time; no time zone may shift them, whatever the
+    // JVM's default zone is.
+    Staff staff = staffForNewUser(entityManager, "Maya Chen");
+    WorkingHours workingHours =
+        new WorkingHours(staff.getStaffId(), (short) 1, LocalTime.of(9, 0), LocalTime.of(16, 0));
+    Long workingHoursId = workingHoursRepository.saveAndFlush(workingHours).getWorkingHoursId();
+    entityManager.clear();
+
+    Object storedStart =
+        entityManager
+            .getEntityManager()
+            .createNativeQuery("SELECT start_time::text FROM working_hours WHERE wh_id = ?1")
+            .setParameter(1, workingHoursId)
+            .getSingleResult();
+    assertThat(storedStart).isEqualTo("09:00:00");
+    entityManager
+        .getEntityManager()
+        .createNativeQuery("UPDATE working_hours SET end_time = TIME '15:30' WHERE wh_id = ?1")
+        .setParameter(1, workingHoursId)
+        .executeUpdate();
+    WorkingHours loaded = workingHoursRepository.findById(workingHoursId).orElseThrow();
+    assertThat(loaded.getStartTime()).isEqualTo(LocalTime.of(9, 0));
+    assertThat(loaded.getEndTime()).isEqualTo(LocalTime.of(15, 30));
+  }
+
+  @Test
   void savesAndReadsAnAppointmentRule(
       @Autowired OrganizationRepository organizationRepository,
       @Autowired ServiceRepository serviceRepository,

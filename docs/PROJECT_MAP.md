@@ -42,6 +42,7 @@ smart-appointment/
 │       │   ├── application-local.yml        docker compose / local
 │       │   ├── application-prod.yml         hosted
 │       │   ├── db/migration/V1__initial_schema.sql   SRS Table 9
+│       │   ├── db/migration/V2__booking_idempotency_key.sql   ADR-0018
 │       │   └── db/seed/R__demo_data.sql             demo data, local profile only
 │       └── test/java/com/smartappointment/
 │           ├── ArchitectureTest.java, FeatureRules.java   ArchUnit rules

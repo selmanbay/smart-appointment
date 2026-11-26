@@ -17,8 +17,15 @@ In progress
 ## Open questions
 
 - [ ] How many hours before the appointment is the reminder sent? (the SRS gives no number)
+- [ ] The e-mail is sent right after commit in the request's thread, so a slow SMTP server delays the response by up to `MAIL_TIMEOUT_MS`. Make it asynchronous (`@Async`) as the SDD says? It needs an executor and an await helper for tests. (Selman)
 
 ## Log
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** B12 e-mail notices (UC-20). Booking, reschedule and cancel publish an `AppointmentEvent`; `AppointmentNotificationListener` handles it with `@TransactionalEventListener(AFTER_COMMIT)` in its own transaction, composes the confirmation, reschedule or cancellation e-mail, sends it through the `NotificationSender` interface (`SmtpNotificationSender`, Mailpit locally) and stores every attempt in `notification` (channel EMAIL, type, SENT with `sent_at` or FAILED, `provider_response` cut to the column's 1000 characters). An SMTP failure comes back as a FAILED result instead of an exception, and the appointment is already committed, so a failed send never undoes it. SMTP connect, read and write time-outs come from `MAIL_TIMEOUT_MS` (default 5000).
+- **State / next:** 273 tests pass (`make backend-verify`). `NotificationIT` books with a failing sender (201, notification FAILED) and cancels with a working one (CONFIRMATION and CANCELLATION both SENT). Not yet checked against a running Mailpit (`make up`, then <http://localhost:8025>). Reminders (F7) and push are not part of the MVP.
+- **Refs:** handoff B12, UC-20, AGENT_RULES sections 8 and 14
 
 ### 2026-11-22 · yusuf · backend
 

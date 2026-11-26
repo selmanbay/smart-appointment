@@ -20,6 +20,17 @@ In progress
 
 ## Log
 
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `ScheduleLookupService.findWorkingHours(staffId, dayOfWeek)` gives the agenda (B11) that day's working hours in the contract's `HH:mm` shape; the mapping is shared with `getWorkingHours`.
+- **Refs:** handoff B11
+
+### 2026-11-26 · yusuf · backend
+
+- **Done:** `ScheduleLookupService` gives other features the appointment rule (empty when a service has none) and a staff member's working periods for a weekday, split by the break. `ScheduleService` keeps the contract reads and uses it.
+- **Why:** Free slots (B6) and booking (B8) need these without using schedule repositories (ADR-0001).
+- **Refs:** handoff B6
+
 ### 2026-11-22 · yusuf · backend
 
 - **Done:** Contract operations getAppointmentRule and getWorkingHours: one `ScheduleController`
